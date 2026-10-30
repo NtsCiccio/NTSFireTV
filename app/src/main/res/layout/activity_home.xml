@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Home: wallpaper, clock with date and weather (top right), "In riproduzione" (Now Playing) widget (top left),
+     "Recenti" (Recent) row and dock at the bottom. Colors, fonts and shapes are applied by the theme at runtime -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:clipChildren="false"
+             android:clipToPadding="false">
+
+    <!-- Full-screen wallpaper: loaded in the background by HomeActivity -->
+    <ImageView
+            android:id="@+id/wallpaper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop" />
+
+    <!-- Dark gradient at the bottom to keep dock and recents readable -->
+    <View
+            android:id="@+id/home_scrim"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/home_scrim_height"
+            android:layout_gravity="bottom"
+            android:background="@drawable/home_scrim" />
+
+    <!-- Clock, date and weather at the top right -->
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="@dimen/safe_area_vertical"
+            android:layout_marginEnd="@dimen/safe_area_horizontal"
+            android:gravity="end"
+            android:orientation="vertical">
+
+        <TextClock
+                android:id="@+id/clock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:format12Hour="HH:mm"
+                android:format24Hour="HH:mm"
+                android:shadowColor="#E6000000"
+                android:shadowDy="2"
+                android:shadowRadius="12"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/clock_text_size" />
+
+        <!-- Date in the stick's language (e.g. "giovedì 30 ottobre") -->
+        <TextClock
+                android:id="@+id/clock_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:format12Hour="EEEE d MMMM"
+                android:format24Hour="EEEE d MMMM"
+                android:shadowColor="#E6000000"
+                android:shadowDy="1"
+                android:shadowRadius="6"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/clock_date_text_size" />
+
+        <!-- Weather: visible only if a city has been chosen -->
+        <TextView
+                android:id="@+id/clock_weather"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:shadowColor="#E6000000"
+                android:shadowDy="1"
+                android:shadowRadius="6"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/clock_date_text_size"
+                android:visibility="gone" />
+
+        <!-- Shortcuts to the Fire OS settings pages open to apps (HomeActivity fires the intents) -->
+        <LinearLayout
+                android:id="@+id/shortcuts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+            <ImageView
+                    android:id="@+id/shortcut_network"
+                    style="@style/NowPlayingButton"
+                    android:contentDescription="@string/shortcut_network"
+                    android:src="@drawable/ic_wifi" />
+
+            <ImageView
+                    android:id="@+id/shortcut_controllers"
+                    style="@style/NowPlayingButton"
+                    android:contentDescription="@string/shortcut_controllers"
+                    android:src="@drawable/ic_controllers" />
+
+            <ImageView
+                    android:id="@+id/shortcut_apps"
+                    style="@style/NowPlayingButton"
+                    android:contentDescription="@string/shortcut_apps"
+                    android:src="@drawable/ic_manage_apps" />
+
+            <ImageView
+                    android:id="@+id/shortcut_device"
+                    style="@style/NowPlayingButton"
+                    android:contentDescription="@string/shortcut_device"
+                    android:src="@drawable/ic_device" />
+        </LinearLayout>
+
+        <!-- Name of the focused shortcut (icons alone aren't enough) -->
+        <TextView
+                android:id="@+id/shortcut_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:shadowColor="#E6000000"
+                android:shadowDy="1"
+                android:shadowRadius="6"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:visibility="invisible" />
+    </LinearLayout>
+
+    <!-- Top-left column: "In riproduzione" (Now Playing) widget and USB drive, each hidden when not needed -->
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:layout_marginStart="@dimen/safe_area_horizontal"
+            android:layout_marginTop="@dimen/safe_area_vertical"
+            android:orientation="vertical">
+
+    <LinearLayout
+            android:id="@+id/now_playing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:visibility="gone">
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="vertical">
+
+            <TextView
+                    android:id="@+id/now_playing_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxWidth="@dimen/now_playing_text_width"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+            <TextView
+                    android:id="@+id/now_playing_artist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxWidth="@dimen/now_playing_text_width"
+                    android:singleLine="true"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+        </LinearLayout>
+
+        <ImageView
+                android:id="@+id/now_playing_previous"
+                style="@style/NowPlayingButton"
+                android:contentDescription="@string/now_playing_previous"
+                android:src="@drawable/ic_previous" />
+
+        <ImageView
+                android:id="@+id/now_playing_play_pause"
+                style="@style/NowPlayingButton"
+                android:contentDescription="@string/now_playing_play"
+                android:src="@drawable/ic_play" />
+
+        <ImageView
+                android:id="@+id/now_playing_next"
+                style="@style/NowPlayingButton"
+                android:contentDescription="@string/now_playing_next"
+                android:src="@drawable/ic_next" />
+    </LinearLayout>
+
+    <!-- USB drive or disk connected: OK opens the video file browser on the drive -->
+    <LinearLayout
+            android:id="@+id/usb_panel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="10dp"
+            android:visibility="gone">
+
+        <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_usb" />
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:orientation="vertical">
+
+            <TextView
+                    android:id="@+id/usb_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxWidth="@dimen/now_playing_text_width"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp" />
+
+            <TextView
+                    android:id="@+id/usb_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+    </LinearLayout>
+
+    <!-- "Recenti" (Recent) row above the dock: last used apps, hidden if there are none -->
+    <LinearLayout
+            android:id="@+id/recents"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="@dimen/recents_margin_bottom"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+        <TextView
+                android:id="@+id/recents_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:shadowColor="#E6000000"
+                android:shadowDy="1"
+                android:shadowRadius="6"
+                android:text="@string/recents_title"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
+
+        <LinearLayout
+                android:id="@+id/recents_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:orientation="horizontal" />
+    </LinearLayout>
+
+    <!-- Dock: scrolls horizontally if there are more tiles than fit -->
+    <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginStart="@dimen/safe_area_horizontal"
+            android:layout_marginEnd="@dimen/safe_area_horizontal"
+            android:layout_marginBottom="@dimen/dock_scroll_margin_bottom"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:paddingStart="@dimen/dock_scroll_padding"
+            android:paddingTop="@dimen/dock_scroll_padding"
+            android:paddingEnd="@dimen/dock_scroll_padding"
+            android:paddingBottom="@dimen/dock_scroll_padding_bottom"
+            android:scrollbars="none">
+
+        <LinearLayout
+                android:id="@+id/dock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+</FrameLayout>

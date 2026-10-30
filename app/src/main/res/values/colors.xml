@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Initial layout values; at runtime they are replaced by the chosen theme's colors -->
+<resources>
+    <!-- Secondary text (subtitles, messages) -->
+    <color name="text_secondary">#B3FFFFFF</color>
+    <!-- Dimming of the screens on top of the home -->
+    <color name="overlay_scrim">#D9000000</color>
+</resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- List screen (file browser, settings): title, message for empty cases, list -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:paddingStart="@dimen/safe_area_horizontal"
+              android:paddingTop="@dimen/safe_area_vertical"
+              android:paddingEnd="@dimen/safe_area_horizontal"
+              android:paddingBottom="@dimen/safe_area_vertical">
+
+    <TextView
+            android:id="@+id/list_title"
+            android:fontFamily="sans-serif-light"
+            android:textColor="@android:color/white"
+            android:textSize="28sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="start"
+            android:singleLine="true" />
+
+    <TextView
+            android:id="@+id/list_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="18sp"
+            android:visibility="gone" />
+
+    <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:divider="@null"
+            android:dividerHeight="4dp"
+            android:drawSelectorOnTop="false"
+            android:scrollbars="none" />
+
+</LinearLayout>

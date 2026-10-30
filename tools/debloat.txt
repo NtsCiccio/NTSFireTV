@@ -1,0 +1,108 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Debloat for Fire TV Stick 4K (2018, AFTMM, Fire OS 6.7.1.1) for NTSFireTV.
+# Used by the Gradle tasks `debloat` and `restoreBloat` (see tools/README.md).
+#
+# Format: one line per package, "# ..." after the name is a comment.
+#   [group]            starts a group (applied with -Pgruppo=name)
+#   [opz-group]        optional group: NOT included in `debloat` without -Pgruppo, must be requested by name
+#   com.example        active: will be disabled
+#   #com.example       off: NOT touched (remove the # to include it)
+#
+# Packages are only DISABLED for the user (pm disable-user --user 0), never uninstalled:
+# `./gradlew restoreBloat` re-enables them all.
+#
+# Based on: the CleanYourTV project's list for this stick (github.com/Gathin23/cleanyourtv),
+# revised for NTSFireTV.
+#
+# NEVER DISABLE (left out of this list on purpose):
+#   com.amazon.tv.launcher        Amazon home (protected; NTSFireTV relies on it)
+#   com.amazon.tv.settings.*      settings
+#   com.amazon.venezia, com.amazon.tigris   Appstore (needed to update apps)
+#   com.amazon.tv.ime             keyboard
+#   remote and Bluetooth, com.amazon.vizzini (voice search)
+#   com.amazon.cast.sink, whisperplay, whisperlink   screen mirroring
+#   com.amazon.ftv.screensaver    Amazon screensaver (needed for `restoreScreensaver`)
+#   com.amazon.tv.oobe            initial setup (needed after a reset)
+#   com.amazon.spotify.mediabrowserservice   Spotify integration
+#   com.amazon.firebat            Prime Video
+#
+# PROTECTED (Fire OS refuses to disable them, no point trying):
+#   com.amazon.client.metrics, com.amazon.device.metrics, com.amazon.device.logmanager,
+#   com.amazon.device.crashmanager, com.amazon.diode, com.amazon.ftvads.deeplinking,
+#   com.amazon.tcomm, com.amazon.tv.csapp
+
+[telemetria] Statistiche, metriche e log inviati ad Amazon
+com.amazon.client.metrics.api              # metrics
+com.amazon.metrics.api                     # metrics
+com.amazon.tv.fw.metrics                   # TV system metrics
+com.amazon.wirelessmetrics.service         # Wi-Fi network metrics
+com.amazon.perfcollection                  # performance collection
+com.amazon.dp.logger                       # log upload
+com.amazon.ceviche                         # data collection
+com.amazon.tv.developer.dataservice        # personalization data
+com.amazon.wifilocker                      # saves Wi-Fi passwords to Amazon's cloud
+
+[pubblicita] Pubblicità, contenuti sponsorizzati, promozioni
+com.amazon.kso.blackbird                   # syncs the Amazon home's ads
+com.amazon.sneakpeek                       # promotional previews
+com.amazon.hybridadidservice               # advertising ID
+com.amazon.hedwig                          # Fire TV Channels
+com.amazon.tv.easyupgrade                  # upgrade offers
+com.amazon.device.sale.service             # deals and sales
+com.amazon.shoptv.client                   # shopping
+com.amazon.shoptv.firetv.client            # shopping
+com.amazon.tv.livetv                       # "Live" tab of the Amazon home
+com.amazon.franktvinput                    # source for the "Live" tab
+com.amazon.livedeviceservice               # "Live" tab service
+com.amazon.gamehub                         # games showcase
+com.amazon.imdb.tv.android.app             # Freevee (redirect)
+com.amazon.minitv.android.app              # miniTV (redirect)
+
+[app-amazon] App e servizi Amazon preinstallati poco usati
+com.amazon.tahoe                           # Amazon Kids
+com.amazon.bueller.music                   # Amazon Music
+com.amazon.bueller.photos                  # Amazon Photos
+com.amazon.cloud9                          # Silk browser (we use TV Bro)
+com.amazon.tv.website_launcher             # website shortcuts
+com.imdb.livingroom.firetv                 # IMDb
+com.amazon.tmm.tutorial                    # tutorial
+com.amazon.storm.lightning.tutorial        # tutorial
+com.amazon.whad                            # multi-room audio (Echo)
+com.amazon.whasettings                     # multi-room audio (Echo)
+com.amazon.wha.mediabrowserservice         # multi-room audio (Echo)
+com.amazon.whisperjoin.middleware.np       # setup from the Alexa app
+com.amazon.whisperjoin.wss.wifiprovisioner # Wi-Fi setup from the Alexa app
+com.amazon.tv.ffsprovisioneeclient         # automatic device setup
+com.amazon.ods.kindleconnect               # Kindle link
+
+[alexa] Extra di Alexa (la ricerca vocale col telecomando resta)
+com.amazon.tv.alexaalerts                  # Alexa alarms and timers on the TV
+com.amazon.tv.alexanotifications           # Alexa notifications
+com.amazon.alexa.externalmediaplayer.fireos  # Alexa commands to other apps
+com.amazon.alexamediaplayer.runtime.ftv    # Alexa as a music player
+com.amazon.aiondec                         # Alexa service
+
+[notifiche] Avvisi e note di sistema
+com.amazon.privacypassservice              # privacy pass service
+com.amazon.providers.contentsupport        # content support
+com.amazon.systemnotices                   # system notices
+com.amazon.tv.releasenotes                 # release notes
+com.amazon.uxnotification                  # promotional notifications
+
+[streaming] App di streaming preinstallate: togli il # SOLO da quelle che non usi
+com.tubitv.ott                            # Tubi
+tv.pluto.android                          # Pluto TV
+com.hulu.plus                             # Hulu
+com.hbo.hbonow                            # Max
+com.cbs.ott                               # Paramount+
+com.peacock.peacockfiretv                 # Peacock
+com.espn.gtv                              # ESPN
+com.fubo.firetv.screen                    # Fubo
+
+[opz-aggiornamenti] Aggiornamenti di Fire OS (OTA): solo con -Pgruppo=opz-aggiornamenti
+# Probably protected on Fire OS 6.7 (they will be "rifiutati"/refused): trying does no harm.
+# Blocking them keeps the stick on the version tested with NTSFireTV, but without security fixes.
+com.amazon.device.software.ota             # update check and download
+com.amazon.device.software.ota.override    # forced updates
+com.amazon.tv.forcedotaupdater.v2          # mandatory updates

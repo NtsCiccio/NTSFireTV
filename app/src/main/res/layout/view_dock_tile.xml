@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Card: takes the "focused" state from the tile via duplicateParentState -->
+    <FrameLayout
+            android:id="@+id/dock_card"
+            android:layout_width="@dimen/dock_tile_width"
+            android:layout_height="@dimen/dock_tile_height"
+            android:duplicateParentState="true">
+
+        <!-- App banner (M3) -->
+        <ImageView
+                android:id="@+id/dock_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+
+        <!-- Placeholder until the banner is there: first letter of the name -->
+        <TextView
+                android:id="@+id/dock_placeholder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@android:color/white"
+                android:textSize="32sp" />
+    </FrameLayout>
+
+    <!-- App name, visible only on focus -->
+    <TextView
+            android:id="@+id/dock_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dock_label_margin"
+            android:alpha="0"
+            android:shadowColor="#80000000"
+            android:shadowDy="1"
+            android:shadowRadius="4"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
+</merge>

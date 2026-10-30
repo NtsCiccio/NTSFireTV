@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Base only: theme colors, shapes and fonts ("Predefinito"/default and user themes) are applied by
+     ThemeStyler at runtime, reading ThemeSpec -->
+<resources>
+    <!-- Base theme: full screen, black background -->
+    <style name="Theme.NTSFireTV" parent="android:Theme.Material.NoActionBar.Fullscreen">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+
+    <!-- Screens on top of the home: translucent, the scrim is set by the chosen theme -->
+    <style name="Theme.NTSFireTV.Overlay">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/overlay_scrim</item>
+    </style>
+
+    <!-- "In riproduzione" (Now Playing) widget buttons (background depends on the theme) -->
+    <style name="NowPlayingButton">
+        <item name="android:layout_width">@dimen/now_playing_button</item>
+        <item name="android:layout_height">@dimen/now_playing_button</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+</resources>

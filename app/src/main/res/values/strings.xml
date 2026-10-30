@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<resources>
+    <string name="app_name">NTSFireTV</string>
+    <string name="all_apps">Tutte le app</string>
+    <string name="all_apps_menu_hint">Tasto Menu ≡ su un\'app: dock, categoria, banner o nascondi</string>
+    <string name="all_apps_search_hint">Cerca un\'app…</string>
+    <string name="all_apps_sort">Ordina: %1$s</string>
+    <string name="all_apps_results">Risultati (%1$d)</string>
+    <string name="all_apps_no_results">Nessuna app con \"%1$s\"</string>
+    <string name="sort_alphabetical">A–Z</string>
+    <string name="sort_most_used">Più usate</string>
+    <string name="sort_recent">Recenti</string>
+    <string name="category_video">Video</string>
+    <string name="category_music">Musica</string>
+    <string name="category_games">Giochi</string>
+    <string name="category_tools">Strumenti</string>
+    <string name="category_other">Altre</string>
+    <string name="app_menu_category">Sposta in categoria…</string>
+    <string name="app_menu_category_title">Categoria di %1$s</string>
+    <string name="shortcut_network">Rete</string>
+    <string name="shortcut_controllers">Telecomandi e Bluetooth</string>
+    <string name="shortcut_apps">Applicazioni</string>
+    <string name="shortcut_device">La mia Fire TV</string>
+    <string name="shortcut_unavailable">Pagina non disponibile: apro le impostazioni</string>
+    <string name="app_menu_dock_add">Aggiungi alla dock</string>
+    <string name="app_menu_dock_remove">Togli dalla dock</string>
+    <string name="app_menu_banner">Scegli un banner</string>
+    <string name="app_menu_hide">Nascondi da Tutte le app</string>
+    <string name="app_dock_added">%1$s aggiunta alla dock</string>
+    <string name="app_dock_removed">%1$s tolta dalla dock</string>
+    <string name="app_hidden">%1$s nascosta: la rimetti da Impostazioni → App nascoste</string>
+    <string name="recents_title">Recenti</string>
+    <string name="continue_watching">Riprendi %1$s · %2$s</string>
+    <string name="usb_free">%1$s liberi · OK per i video</string>
+    <string name="usb_open">OK per i video</string>
+    <string name="weather_format">%1$d° · %2$s</string>
+    <string name="weather_temperature">%1$d°</string>
+    <string name="banner_title">Banner per %1$s</string>
+    <string name="banner_original">Originale</string>
+    <string name="app_not_installed">%1$s non è installata</string>
+    <string name="app_not_installed_store">%1$s non è installata: la apro nell\'Appstore</string>
+
+    <!-- Home button (M4) -->
+    <string name="home_watcher_channel">Tasto Home</string>
+    <string name="home_watcher_notification">Il tasto Home riporta a NTSFireTV</string>
+
+    <!-- Wallpapers (M5) -->
+    <string name="wallpaper_title">Sfondo</string>
+    <string name="wallpaper_default">Predefinito</string>
+    <string name="wallpaper_black">Nero</string>
+    <string name="wallpaper_theme">Sfondo del tema</string>
+    <string name="wallpaper_slot_always">Usa come sfondo</string>
+    <string name="wallpaper_slot_night">Usa solo di notte (20–7)</string>
+    <string name="wallpaper_night_active">Sfondo notturno attivo dalle 20 alle 7. "Usa come sfondo" su un\'immagine lo toglie.</string>
+    <string name="wallpaper_applying">Applico lo sfondo…</string>
+    <string name="wallpaper_error">Impossibile usare questa immagine</string>
+    <string name="wallpaper_empty">Nessuna immagine trovata. Copia file JPG o PNG in %1$s oppure nella cartella wallpapers di una chiavetta USB.</string>
+    <string name="wallpaper_no_permission">Senza il permesso di accesso alla memoria si può usare solo lo sfondo predefinito.</string>
+
+    <!-- Video file browser (M6) and VLC (M7) -->
+    <string name="video_title">Video</string>
+    <string name="video_no_volumes">Nessuna memoria trovata. Collega una chiavetta o un disco USB.</string>
+    <string name="video_empty_folder">Nessun video o cartella qui.</string>
+    <string name="video_no_permission">Serve il permesso di accesso alla memoria per vedere i video.</string>
+    <string name="video_volume_removed">Memoria scollegata</string>
+    <string name="video_in_progress">In corso · %1$s</string>
+    <string name="video_in_progress_of">In corso · %1$s di %2$s</string>
+    <string name="video_resume_from">Riprendi da %1$s</string>
+    <string name="video_from_start">Dall\'inizio</string>
+    <string name="vlc_not_installed">VLC non è installato: installalo dall\'Appstore per guardare i video.</string>
+
+    <!-- "In riproduzione" (Now Playing) widget (M8) -->
+    <string name="now_playing_play">Riproduci</string>
+    <string name="now_playing_pause">Pausa</string>
+    <string name="now_playing_next">Successivo</string>
+    <string name="now_playing_previous">Precedente</string>
+
+    <!-- Settings (M9) -->
+    <string name="settings_title">Impostazioni</string>
+    <string name="settings_wallpaper">Sfondo</string>
+    <string name="settings_wallpaper_hint">Scegli lo sfondo della home (anche col tasto Menu ≡)</string>
+    <string name="settings_theme">Tema</string>
+    <string name="theme_new">＋  Nuovo tema…</string>
+    <string name="theme_edit">✎  Modifica \"%1$s\"…</string>
+    <string name="theme_new_name">Il mio tema</string>
+    <string name="theme_saved">Tema \"%1$s\" salvato</string>
+    <string name="theme_save_error">Impossibile salvare il tema: serve l\'accesso alla memoria</string>
+    <string name="theme_editor_hint">◀ ▶ per cambiare una voce, OK per il valore successivo. Indietro esce senza salvare.</string>
+    <string name="theme_editor_save">Salva e usa questo tema</string>
+    <string name="theme_editor_save_hint">Salvato in /sdcard/NTSFireTV/themes come file JSON</string>
+    <string name="theme_value_custom">Personalizzato</string>
+    <string name="theme_preview_clock">21:30</string>
+    <string name="theme_preview_normal">Tile</string>
+    <string name="theme_preview_focused">Selezionata</string>
+    <string name="theme_preview_secondary">Testo secondario</string>
+    <string name="theme_field_name">Nome</string>
+    <string name="theme_field_accent">Colore accento</string>
+    <string name="theme_field_tile_style">Stile delle tile</string>
+    <string name="theme_field_double_focus">Focus a doppio bordo</string>
+    <string name="theme_field_tile_color">Colore delle tile</string>
+    <string name="theme_field_tile_alpha">Opacità delle tile</string>
+    <string name="theme_field_border">Bordo delle tile</string>
+    <string name="theme_field_focus_border">Bordo al focus</string>
+    <string name="theme_field_corners">Angoli</string>
+    <string name="theme_field_clock_font">Font dell\'orologio</string>
+    <string name="theme_field_clock_size">Dimensione dell\'orologio</string>
+    <string name="theme_field_clock_glow">Ombra dell\'orologio</string>
+    <string name="theme_field_title_font">Font dei titoli</string>
+    <string name="theme_field_secondary">Testi secondari</string>
+    <string name="theme_field_overlay">Velo delle schermate</string>
+    <string name="theme_field_wallpaper">Sfondo</string>
+    <string name="theme_wallpaper_generated">Generato dai colori del tema</string>
+    <string name="theme_wallpaper_mine">Quello scelto da me</string>
+    <string name="theme_field_scrim">Sfumatura scura sotto la dock</string>
+    <string name="settings_dock">Ordine della dock</string>
+    <string name="settings_dock_hint">Sposta le tile della home col telecomando</string>
+    <string name="settings_home_key">Tasto Home</string>
+    <string name="settings_now_playing">Widget In riproduzione</string>
+    <string name="screensaver_label">NTSFireTV – Orologio</string>
+    <string name="settings_storage">Accesso a memoria e USB</string>
+    <string name="settings_screensaver">Salvaschermo orologio</string>
+    <string name="settings_hidden_apps">App nascoste</string>
+    <string name="settings_hidden_none">Nessuna app nascosta</string>
+    <string name="settings_hidden_count">%1$d app nascoste · OK per rimetterle</string>
+    <string name="settings_hidden_show_title">Rimetti in Tutte le app</string>
+    <string name="settings_weather">Meteo</string>
+    <string name="settings_weather_off">Spento · OK per scegliere la città</string>
+    <string name="settings_weather_hint">Es. Milano</string>
+    <string name="settings_weather_privacy">Il meteo arriva da Open-Meteo (gratuito, senza account). Si invia solo la città, poi le sue coordinate ogni 30 minuti.</string>
+    <string name="settings_weather_disable">Spegni</string>
+    <string name="settings_weather_not_found">Nessuna città trovata per \"%1$s\" (serve la connessione)</string>
+    <string name="settings_weather_set">Meteo per %1$s</string>
+    <string name="settings_backup">Salva le impostazioni</string>
+    <string name="settings_backup_hint">Tema, dock, sfondo e banner, nella memoria e su chiavetta USB</string>
+    <string name="settings_backup_done">Impostazioni salvate in:\n%1$s</string>
+    <string name="settings_backup_error">Salvataggio non riuscito: controlla l\'accesso alla memoria</string>
+    <string name="settings_restore">Ripristina le impostazioni</string>
+    <string name="settings_restore_hint">Dal backup su chiavetta USB, oppure nella memoria della stick</string>
+    <string name="settings_restore_none">Nessun backup trovato in NTSFireTV/backup (memoria o chiavetta)</string>
+    <string name="settings_restore_confirm">Le impostazioni attuali verranno sostituite con quelle salvate in:\n%1$s</string>
+    <string name="settings_restore_action">Ripristina</string>
+    <string name="settings_restore_done">Impostazioni ripristinate</string>
+    <string name="settings_restore_error">Ripristino non riuscito: il backup è danneggiato o illeggibile</string>
+    <string name="settings_status">Stato della stick</string>
+    <string name="settings_status_hint">Indirizzo IP, Wi-Fi, memoria e spazio libero</string>
+    <string name="status_ip">Indirizzo IP: %1$s</string>
+    <string name="status_wifi">Wi-Fi: %1$s %2$s</string>
+    <string name="status_ram">Memoria libera: %1$s su %2$s</string>
+    <string name="status_storage">Spazio libero: %1$s su %2$s</string>
+    <string name="status_system">Sistema: %1$s</string>
+    <string name="status_adb">Dal computer: adb connect %1$s:5555</string>
+    <string name="status_unknown">non disponibile</string>
+    <string name="status_not_connected">non connesso</string>
+    <string name="settings_fire_os">Impostazioni Fire TV</string>
+    <string name="settings_fire_os_hint">Rete, display, app, telecomandi…</string>
+    <string name="settings_fire_os_error">Impossibile aprire le impostazioni di sistema</string>
+    <string name="settings_version">Versione</string>
+    <string name="settings_adb_message">Per attivarlo, dal computer collegato con ADB:\n\n%1$s</string>
+    <string name="status_active">Attivo</string>
+    <string name="status_inactive">Non attivo · %1$s</string>
+    <string name="status_needs_adb">premi OK per il comando ADB</string>
+    <string name="status_restart_needed">permesso concesso, riapri NTSFireTV</string>
+    <string name="status_press_to_allow">premi OK per consentire</string>
+
+    <!-- Dock order (M9) -->
+    <string name="dock_order_hint">OK su una tile per prenderla, ◀ ▶ per spostarla, di nuovo OK per lasciarla.</string>
+    <string name="dock_order_moving">◀ %1$s ▶</string>
+    <string name="dock_order_reset">Ripristina ordine predefinito</string>
+</resources>

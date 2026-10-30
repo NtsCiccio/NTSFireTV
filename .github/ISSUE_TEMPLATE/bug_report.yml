@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+name: Bug report
+description: Something doesn't work as expected
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      placeholder: "Fire TV Stick 4K (1st gen, AFTMM)"
+    validations:
+      required: true
+  - type: input
+    id: fireos
+    attributes:
+      label: Fire OS version
+      description: Settings → My Fire TV → About
+      placeholder: "6.7.1.1"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: NTSFireTV version
+      description: NTSFireTV → Impostazioni (Settings) → Versione, or the commit if built from source
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: "Output of `adb logcat -s NTSFireTV` (or `./gradlew logs`) while reproducing the problem."
+      render: text

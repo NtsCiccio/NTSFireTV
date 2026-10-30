@@ -1,0 +1,42 @@
+# IntelliJ / Android Studio
+*.iml
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/deploymentTargetDropDown.xml
+
+# Gradle and Kotlin
+.gradle
+.kotlin/
+build/
+/captures
+.externalNativeBuild
+.cxx
+
+# Local configuration (SDK path)
+local.properties
+
+# macOS
+.DS_Store
+
+# APKs and bundles: published on GitHub Releases, not in the repo
+*.apk
+*.aab
+
+# Release signing (never in the repository)
+keystore.properties
+*.jks
+*.keystore
+
+# Personal wallpapers (copyrighted images: local only)
+local-wallpapers/
+
+# Local data of the Gradle tasks (e.g. the stick's original screensaver)
+.ntsfiretv/
+
+# Local instructions for Claude Code (personal, not published)
+CLAUDE.md

@@ -1,0 +1,16 @@
+[versions]
+# Don't update agp without checking that IntelliJ's Android plugin supports it (see docs/DEVELOPMENT.md)
+agp = "9.1.1"
+# Newer Kotlin than the one bundled with AGP 9.1.1 (2.2.10): with built-in Kotlin, putting it on the classpath is enough
+kotlin = "2.4.21"
+junit = "4.13.2"
+orgJson = "20260814"
+
+[libraries]
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+# Only for tests on the computer (./gradlew test): not included in the APK
+junit = { module = "junit:junit", version.ref = "junit" }
+org-json = { module = "org.json:json", version.ref = "orgJson" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }

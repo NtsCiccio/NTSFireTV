@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Monthly dependency update PRs (Gradle and GitHub Actions).
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    ignore:
+      # AGP is updated by hand: IntelliJ's Android plugin supports new versions late (see docs/DEVELOPMENT.md)
+      - dependency-name: "com.android.application"
+      - dependency-name: "com.android.tools.build:gradle"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"

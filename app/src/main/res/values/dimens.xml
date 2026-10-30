@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<resources>
+    <!-- TV safe-area margins (overscan): ~5% of 960x540 dp -->
+    <dimen name="safe_area_horizontal">48dp</dimen>
+    <dimen name="safe_area_vertical">27dp</dimen>
+
+    <dimen name="clock_text_size">40sp</dimen>
+    <dimen name="clock_date_text_size">16sp</dimen>
+    <dimen name="home_scrim_height">300dp</dimen>
+
+    <!-- 16:9 tiles like Fire TV banners (320×180).
+         Dock: 6 tiles × 128dp + 5 gaps × 16dp = 848dp (usable area 864dp) -->
+    <dimen name="dock_tile_width">128dp</dimen>
+    <dimen name="dock_tile_height">72dp</dimen>
+    <dimen name="dock_tile_spacing">16dp</dimen>
+    <dimen name="dock_tile_focused_elevation">12dp</dimen>
+    <dimen name="dock_label_margin">12dp</dimen>
+    <!-- The dock lives in a HorizontalScrollView: the padding leaves room for the focus zoom and label.
+         bottom padding + margin = 40dp, as before -->
+    <dimen name="dock_scroll_padding">14dp</dimen>
+    <dimen name="dock_scroll_padding_bottom">28dp</dimen>
+    <dimen name="dock_scroll_margin_bottom">12dp</dimen>
+    <!-- "Recenti" (Recent) row: above the dock (40dp + ~120dp of dock with label) -->
+    <dimen name="recents_margin_bottom">172dp</dimen>
+
+    <!-- Margin around classic (non-banner) icons inside the card -->
+    <dimen name="tile_icon_padding">12dp</dimen>
+
+    <!-- "Tutte le app" (All apps) grid and wallpaper picker -->
+    <dimen name="grid_tile_spacing">16dp</dimen>
+    <!-- Room at the sides of the All apps list for the 1.15 tile zoom -->
+    <dimen name="all_apps_zoom_room">32dp</dimen>
+    <dimen name="all_apps_zoom_room_negative">-32dp</dimen>
+    <dimen name="all_apps_sort_width">190dp</dimen>
+
+    <!-- Lists (file browser, settings) -->
+    <dimen name="list_row_min_height">64dp</dimen>
+    <dimen name="list_row_padding">16dp</dimen>
+    <dimen name="list_row_icon">32dp</dimen>
+
+    <!-- "In riproduzione" (Now Playing) widget (top left) -->
+    <dimen name="now_playing_text_width">320dp</dimen>
+    <dimen name="now_playing_button">44dp</dimen>
+
+    <!-- Theme editor: preview column -->
+    <dimen name="theme_preview_width">300dp</dimen>
+</resources>

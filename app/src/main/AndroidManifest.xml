@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Fire TV: no touchscreen, leanback UI optional -->
+    <uses-feature
+            android:name="android.software.leanback"
+            android:required="false" />
+    <uses-feature
+            android:name="android.hardware.touchscreen"
+            android:required="false" />
+
+    <!-- Home button (M4): foreground app via UsageStats, granted with "appops set ... GET_USAGE_STATS allow" -->
+    <uses-permission
+            android:name="android.permission.PACKAGE_USAGE_STATS"
+            tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Required only from API 28/34: ignored on Fire OS 6 (API 25) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <!-- Wallpapers (M5) and videos (M6): shared storage and USB drives. WRITE is only needed to create
+         /sdcard/NTSFireTV/wallpapers. On API 25 these are runtime permissions -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission
+            android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+            android:maxSdkVersion="28"
+            tools:ignore="ScopedStorage" />
+
+    <!-- Only for the weather (Open-Meteo), and only if a city is chosen in Settings -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Wi-Fi network name and signal in Settings → "Stato della stick" (stick status; permission granted at install time) -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!-- Needed from Android 11 to see other apps (ignored on Fire OS 6) -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <package android:name="org.videolan.vlc" />
+    </queries>
+
+    <application
+            android:allowBackup="false"
+            android:banner="@drawable/banner"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:supportsRtl="true"
+            android:theme="@style/Theme.NTSFireTV">
+
+        <activity
+                android:name=".home.HomeActivity"
+                android:exported="true"
+                android:launchMode="singleTask"
+                android:stateNotNeeded="true">
+
+            <!-- Shows up in the Fire TV app list -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+
+            <!-- Home screen candidate -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Screens on top of the home: translucent theme, the home shows through dimmed -->
+        <activity
+                android:name=".apps.AllAppsActivity"
+                android:exported="false"
+                android:theme="@style/Theme.NTSFireTV.Overlay" />
+
+        <activity
+                android:name=".wallpaper.WallpaperPickerActivity"
+                android:exported="false"
+                android:theme="@style/Theme.NTSFireTV.Overlay" />
+
+        <activity
+                android:name=".media.VideoBrowserActivity"
+                android:exported="false"
+                android:theme="@style/Theme.NTSFireTV.Overlay" />
+
+        <activity
+                android:name=".system.SettingsActivity"
+                android:exported="false"
+                android:theme="@style/Theme.NTSFireTV.Overlay" />
+
+        <activity
+                android:name=".home.ThemeEditorActivity"
+                android:exported="false"
+                android:theme="@style/Theme.NTSFireTV.Overlay" />
+
+        <activity
+                android:name=".home.DockOrderActivity"
+                android:exported="false"
+                android:theme="@style/Theme.NTSFireTV.Overlay" />
+
+        <!-- Videos to VLC (M7): read-only content://, access only via temporary grant -->
+        <provider
+                android:name=".media.MediaFileProvider"
+                android:authorities="${applicationId}.files"
+                android:exported="false"
+                android:grantUriPermissions="true" />
+
+        <!-- Home button without root or accessibility: watches the foreground app.
+             directBootAware: can start as early as LOCKED_BOOT_COMPLETED, before unlock -->
+        <service
+                android:name=".system.HomeWatcherService"
+                android:directBootAware="true"
+                android:exported="false"
+                android:foregroundServiceType="specialUse">
+            <property
+                    android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                    android:value="Launcher: riporta alla home personalizzata quando si apre quella di sistema" />
+        </service>
+
+        <!-- "In riproduzione" (Now Playing) widget (M8): only used to access MediaSessions, enabled via ADB -->
+        <service
+                android:name=".system.NowPlayingListenerService"
+                android:exported="true"
+                android:label="@string/settings_now_playing"
+                android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- Screensaver with a moving clock: enabled via ADB (screensaver_components) -->
+        <service
+                android:name=".system.ClockDreamService"
+                android:exported="true"
+                android:label="@string/screensaver_label"
+                android:permission="android.permission.BIND_DREAM_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.dreams.DreamService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
+        <!-- LOCKED_BOOT_COMPLETED arrives before BOOT_COMPLETED, which on Fire OS is minutes late -->
+        <receiver
+                android:name=".system.BootReceiver"
+                android:directBootAware="true"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

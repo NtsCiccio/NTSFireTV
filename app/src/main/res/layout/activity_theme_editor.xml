@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Theme editor: preview on the left (normal and selected tile, clock, title), items on the right -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="horizontal"
+              android:paddingStart="@dimen/safe_area_horizontal"
+              android:paddingTop="@dimen/safe_area_vertical"
+              android:paddingEnd="@dimen/safe_area_horizontal"
+              android:paddingBottom="@dimen/safe_area_vertical">
+
+    <LinearLayout
+            android:layout_width="@dimen/theme_preview_width"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="32dp"
+            android:orientation="vertical">
+
+        <TextView
+                android:id="@+id/list_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-light"
+                android:singleLine="true"
+                android:textColor="@android:color/white"
+                android:textSize="28sp" />
+
+        <TextView
+                android:id="@+id/list_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/theme_editor_hint"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
+
+        <TextView
+                android:id="@+id/theme_preview_clock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="24dp"
+                android:text="@string/theme_preview_clock"
+                android:textColor="@android:color/white" />
+
+        <TextView
+                android:id="@+id/theme_preview_normal"
+                android:layout_width="@dimen/dock_tile_width"
+                android:layout_height="@dimen/dock_tile_height"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:text="@string/theme_preview_normal"
+                android:textColor="@android:color/white" />
+
+        <TextView
+                android:id="@+id/theme_preview_focused"
+                android:layout_width="@dimen/dock_tile_width"
+                android:layout_height="@dimen/dock_tile_height"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="@string/theme_preview_focused"
+                android:textColor="@android:color/white" />
+
+        <TextView
+                android:id="@+id/theme_preview_secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/theme_preview_secondary"
+                android:textSize="14sp" />
+    </LinearLayout>
+
+    <ListView
+            android:id="@+id/list"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:divider="@null"
+            android:dividerHeight="4dp"
+            android:scrollbars="none" />
+
+</LinearLayout>

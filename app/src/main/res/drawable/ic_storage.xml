@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Internal storage -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="32dp"
+        android:height="32dp"
+        android:viewportWidth="24"
+        android:viewportHeight="24">
+    <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M4,5H20V11H4Z M4,13H20V19H4Z" />
+    <path
+            android:fillColor="#FF000000"
+            android:pathData="M6,7H8V9H6Z M6,15H8V17H6Z" />
+</vector>
