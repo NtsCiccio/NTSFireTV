@@ -28,8 +28,8 @@ body:
   - type: input
     id: version
     attributes:
-      label: NTSFireTV version
-      description: NTSFireTV → Impostazioni (Settings) → Versione, or the commit if built from source
+      label: NTSFireTV commit
+      description: Output of `git rev-parse --short HEAD` in the folder you built from
     validations:
       required: true
   - type: textarea

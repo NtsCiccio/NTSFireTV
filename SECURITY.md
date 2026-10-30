@@ -2,14 +2,14 @@
 
 ## Supported versions
 
-Only the latest release of NTSFireTV receives fixes.
+There are no binary releases: fixes go to the `main` branch only, so always build from the latest commit.
 
 ## Reporting a vulnerability
 
 Please **don't open a public issue** for security problems.
 Use GitHub's private reporting instead: **Security → Report a vulnerability** on this repository.
 
-Include the NTSFireTV version, the device model and Fire OS version, and the steps to reproduce.
+Include the commit you built from, the device model and Fire OS version, and the steps to reproduce.
 This is a personal project maintained in spare time: expect a first reply within a couple of weeks.
 
 ## Scope

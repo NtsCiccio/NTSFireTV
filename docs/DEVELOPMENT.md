@@ -1,262 +1,262 @@
-# Sviluppo di NTSFireTV
+# Developing NTSFireTV
 
-Guida per compilare, installare e debuggare NTSFireTV su una Fire TV reale.
-Funziona allo stesso modo su macOS, Linux e Windows.
+Guide to building, installing and debugging NTSFireTV on a real Fire TV.
+Works the same way on macOS, Linux and Windows.
 
-## Requisiti
+## Requirements
 
 - **JDK 17**
-- **IntelliJ IDEA** con il plugin **Android** (JetBrains) oppure Android Studio
-- **Android SDK** con: SDK Platform (ultima), Build-Tools, Platform-Tools
+- **IntelliJ IDEA** with the **Android** plugin (JetBrains), or Android Studio
+- **Android SDK** with: SDK Platform (latest), Build-Tools, Platform-Tools
 
-In IntelliJ i componenti si installano da Settings → Languages & Frameworks → **Android SDK**.
+In IntelliJ, components are installed from Settings → Languages & Frameworks → **Android SDK**.
 
-> **Nota su IntelliJ:** il plugin Android supporta le nuove versioni dell'Android Gradle Plugin (AGP)
-> con un po' di ritardo rispetto ad Android Studio. Non aggiornare `agp` in
-> `gradle/libs.versions.toml` oltre la versione supportata dal tuo IntelliJ, altrimenti il sync fallisce.
+> **Note on IntelliJ:** the Android plugin supports new Android Gradle Plugin (AGP) versions
+> somewhat later than Android Studio. Don't bump `agp` in
+> `gradle/libs.versions.toml` beyond the version supported by your IntelliJ, or the sync fails.
 
-## `adb` nel PATH
+## `adb` in the PATH
 
-`adb` si trova nella cartella `platform-tools` dell'SDK. Percorsi predefiniti:
+`adb` lives in the SDK's `platform-tools` folder. Default locations:
 
-| OS | Percorso |
+| OS | Path |
 |---|---|
 | macOS | `~/Library/Android/sdk/platform-tools` |
 | Linux | `~/Android/Sdk/platform-tools` |
 | Windows | `%LOCALAPPDATA%\Android\Sdk\platform-tools` |
 
-Se hai scelto un'altra cartella, la vedi in IntelliJ nella pagina Android SDK.
+If you chose a different folder, IntelliJ shows it on the Android SDK page.
 
-macOS / Linux (`~/.zshrc` o `~/.bashrc`):
+macOS / Linux (`~/.zshrc` or `~/.bashrc`):
 
 ```bash
 export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools"   # macOS
 export PATH="$PATH:$HOME/Android/Sdk/platform-tools"           # Linux
 ```
 
-Windows: aggiungi il percorso alla variabile d'ambiente `Path` dell'utente.
+Windows: add the path to the user's `Path` environment variable.
 
-Verifica con `adb version`.
+Check with `adb version`.
 
-## Preparare la Fire TV
+## Preparing the Fire TV
 
-1. Impostazioni → La mia Fire TV → **Opzioni sviluppatore**
-2. Attiva **Debug ADB** e **App da origini sconosciute**
+1. Settings → My Fire TV → **Developer Options**
+2. Turn on **ADB Debugging** and **Apps from Unknown Sources**
 
-Se "Opzioni sviluppatore" non compare: Impostazioni → La mia Fire TV → Informazioni,
-premi 7 volte sul nome del dispositivo.
+If "Developer Options" doesn't appear: Settings → My Fire TV → About,
+press the device name 7 times.
 
-## Trovare l'IP della Fire TV
+## Finding the Fire TV's IP
 
-**Dalla TV:** Impostazioni → La mia Fire TV → Informazioni → **Rete** → "Indirizzo IP".
+**From the TV:** Settings → My Fire TV → About → **Network** → "IP Address".
 
-**Dal router:** cerca il dispositivo nella lista DHCP (di solito si chiama `amazon-...`).
+**From the router:** look for the device in the DHCP list (usually named `amazon-...`).
 
-> **Consiglio:** imposta una **prenotazione DHCP** sul router per la Fire TV,
-> così l'IP non cambia e non devi ricontrollarlo ogni volta.
+> **Tip:** set up a **DHCP reservation** on the router for the Fire TV,
+> so the IP doesn't change and you don't have to check it every time.
 
-## Connessione
+## Connecting
 
 ```bash
 adb connect <IP-FIRE-TV>:5555
 adb devices
 ```
 
-Alla prima connessione la TV mostra il popup di autorizzazione: scegli **Consenti**
-e spunta "Consenti sempre da questo computer". `adb devices` deve mostrare `device`
-(non `unauthorized` o `offline`).
+On the first connection the TV shows an authorization popup: choose **Allow**
+and tick "Always allow from this computer". `adb devices` must show `device`
+(not `unauthorized` or `offline`).
 
-## Build e installazione
+## Build and install
 
-Il modo più rapido è il task Gradle che installa, concede tutti i permessi e apre NTSFireTV:
+The quickest way is the Gradle task that installs, grants all permissions and opens NTSFireTV:
 
 ```bash
 ./gradlew installStick                              # macOS / Linux
 gradlew.bat installStick                            # Windows
-./gradlew installStick -Pstick=<IP-FIRE-TV>:5555    # si collega prima alla stick indicata
+./gradlew installStick -Pstick=<IP-FIRE-TV>:5555    # connects to the given stick first
 ```
 
-Solo installazione, senza permessi:
+Install only, without permissions:
 
 ```bash
 ./gradlew installDebug
 adb shell am start -n it.ntsciccio.ntsfiretv/.home.HomeActivity
 ```
 
-Da IntelliJ: run configuration **Android App** con la Fire TV selezionata come dispositivo.
+From IntelliJ: an **Android App** run configuration with the Fire TV selected as the device.
 
-### Task Gradle per la Fire TV
+### Gradle tasks for the Fire TV
 
-Tutti nel gruppo **fire tv** (`./gradlew tasks --group "fire tv"`), usano l'`adb` dell'SDK.
-Con `-Pstick=IP:5555` si collegano prima alla stick e la usano come dispositivo.
+All in the **fire tv** group (`./gradlew tasks --group "fire tv"`); they use the SDK's `adb`.
+With `-Pstick=IP:5555` they connect to the stick first and use it as the device.
 
-| Task | Cosa fa |
+| Task | What it does |
 |---|---|
-| `installStick` | `installDebug` + browser (se manca) + permessi + notification listener + salvaschermo orologio + debloat (tutti i gruppi + blocco aggiornamenti obbligatori; `-Pdebloat=false` lo salta) + avvio della home |
-| `installStickRelease` | Come `installStick`, ma con la release firmata (serve `keystore.properties`, vedi Release firmata) |
-| `installBrowser` | Installa **TV Bro** se manca: APK ufficiale da GitHub (variante WebView, la più leggera), scaricato una volta in `app/build/external/` e verificato con SHA-256 |
-| `enableServices` | Solo permessi e notification listener (es. dopo una reinstallazione) |
-| `pushWallpaper -Pimage=foto.jpg` | Copia un'immagine in `/sdcard/NTSFireTV/wallpapers/` |
-| `pushTheme -Ptheme=tema.json` | Copia un tema in `/sdcard/NTSFireTV/themes/` (vedi Temi) |
-| `enableScreensaver` | Imposta il salvaschermo orologio (vedi Salvaschermo) |
-| `restoreScreensaver` | Rimette il salvaschermo di Fire OS salvato prima di sostituirlo |
-| `logs` | `adb logcat -s NTSFireTV` (Ctrl+C per uscire) |
-| `debloat -Pgruppo=nome` / `restoreBloat` | Disattiva / riattiva i servizi Amazon di `tools/debloat.txt` (vedi tools/README.md) |
-| `connectStick -Pstick=IP:5555` | Solo `adb connect` |
+| `installStick` | `installDebug` + browser (if missing) + permissions + notification listener + clock screensaver + debloat (all groups + blocking of forced updates; `-Pdebloat=false` skips it) + launches the home |
+| `installStickRelease` | Like `installStick`, but with the signed release (needs `keystore.properties`, see Signed release) |
+| `installBrowser` | Installs **TV Bro** if missing: official APK from GitHub (WebView variant, the lightest), downloaded once into `app/build/external/` and verified with SHA-256 |
+| `enableServices` | Permissions and notification listener only (e.g. after a reinstall) |
+| `pushWallpaper -Pimage=foto.jpg` | Copies an image to `/sdcard/NTSFireTV/wallpapers/` |
+| `pushTheme -Ptheme=tema.json` | Copies a theme to `/sdcard/NTSFireTV/themes/` (see Themes) |
+| `enableScreensaver` | Sets the clock screensaver (see Screensaver) |
+| `restoreScreensaver` | Restores the Fire OS screensaver saved before replacing it |
+| `logs` | `adb logcat -s NTSFireTV` (Ctrl+C to exit) |
+| `debloat -Pgruppo=nome` / `restoreBloat` | Disables / re-enables the Amazon services in `tools/debloat.txt` (see tools/README.md) |
+| `connectStick -Pstick=IP:5555` | `adb connect` only |
 
-## Permessi da concedere via ADB
+## Permissions to grant via ADB
 
-Fire OS non mostra le schermate per concedere questi permessi: si danno una volta da ADB
-(`./gradlew enableServices` li dà tutti). Si perdono disinstallando l'app.
+Fire OS doesn't show the screens for granting these permissions: they are granted once via ADB
+(`./gradlew enableServices` grants them all). They are lost when the app is uninstalled.
 
-| Funzione | Comando | Verifica |
+| Feature | Command | Check |
 |---|---|---|
-| Tasto Home (M4) | `adb shell appops set it.ntsciccio.ntsfiretv GET_USAGE_STATS allow` | `adb shell appops get it.ntsciccio.ntsfiretv GET_USAGE_STATS` → `allow` |
-| Sfondi e video (M5/M6) | `adb shell pm grant it.ntsciccio.ntsfiretv android.permission.READ_EXTERNAL_STORAGE` (e `WRITE_EXTERNAL_STORAGE`) | Impostazioni di NTSFireTV → "Accesso a memoria e USB" |
-| Widget In riproduzione (M8) | vedi sotto | `adb shell settings get secure enabled_notification_listeners` |
+| Home button (M4) | `adb shell appops set it.ntsciccio.ntsfiretv GET_USAGE_STATS allow` | `adb shell appops get it.ntsciccio.ntsfiretv GET_USAGE_STATS` → `allow` |
+| Wallpapers and videos (M5/M6) | `adb shell pm grant it.ntsciccio.ntsfiretv android.permission.READ_EXTERNAL_STORAGE` (and `WRITE_EXTERNAL_STORAGE`) | NTSFireTV settings → "Accesso a memoria e USB" (Storage and USB access) |
+| "In riproduzione" (Now playing) widget (M8) | see below | `adb shell settings get secure enabled_notification_listeners` |
 
-Lo stato di tutti i permessi si vede anche in **NTSFireTV → Impostazioni**: su ogni voce non attiva,
-OK mostra il comando ADB. Il permesso della memoria si può concedere anche dall'app (popup alla prima apertura).
+The status of all permissions is also shown in **NTSFireTV → Impostazioni** (Settings): on each inactive entry,
+OK shows the ADB command. The storage permission can also be granted from the app (popup on first launch).
 
-## Tasto Home
+## Home button
 
-Senza root, e con l'accessibilità di terze parti bloccata da Fire OS 6.7, il tasto Home è gestito da
-`HomeWatcherService`: un foreground service leggero che ogni 100 ms controlla quale activity è in primo piano
-(`UsageStatsManager`) e, se è la home di Amazon (`com.amazon.tv.launcher.ui.HomeActivity_vNext`), riporta
-a NTSFireTV spostando in primo piano il suo task (`AppTask.moveToFront()`).
+Without root, and with third-party accessibility blocked by Fire OS 6.7, the Home button is handled by
+`HomeWatcherService`: a lightweight foreground service that every 100 ms checks which activity is in the foreground
+(`UsageStatsManager`) and, if it is the Amazon home (`com.amazon.tv.launcher.ui.HomeActivity_vNext`), brings
+NTSFireTV back by moving its task to the front (`AppTask.moveToFront()`).
 
-> Avviare l'activity con `startActivity` non basta: dopo il tasto Home Android blocca per ~5 s
-> le activity avviate in background. `moveToFront()` non è un avvio di activity e non subisce il blocco.
-> Idea presa dal launcher open source [dumbtv](https://github.com/humblemuzzu/dumbtv).
+> Starting the activity with `startActivity` isn't enough: after the Home button Android blocks
+> activities started from the background for ~5 s. `moveToFront()` is not an activity start and isn't blocked.
+> Idea taken from the open-source launcher [dumbtv](https://github.com/humblemuzzu/dumbtv).
 
-All'accensione il servizio parte con `LOCKED_BOOT_COMPLETED` (su Fire OS `BOOT_COMPLETED` arriva
-con minuti di ritardo), aspetta lo sblocco e apre NTSFireTV dopo ~2,5 s.
+At power-on the service starts on `LOCKED_BOOT_COMPLETED` (on Fire OS `BOOT_COMPLETED` arrives
+minutes late), waits for the unlock and opens NTSFireTV after ~2.5 s.
 
-Limiti noti:
+Known limitations:
 
-- Per un attimo si vede la home Amazon (rilevamento in ~20-380 ms): Fire OS non avvisa le app
-  del tasto Home (`CLOSE_SYSTEM_DIALOGS`), quindi non si può anticipare.
-- Disattivare la home Amazon (`pm disable-user`) non è possibile: è un pacchetto protetto.
+- The Amazon home is visible for a moment (detection in ~20-380 ms): Fire OS doesn't notify apps
+  of the Home button (`CLOSE_SYSTEM_DIALOGS`), so it can't be anticipated.
+- Disabling the Amazon home (`pm disable-user`) isn't possible: it is a protected package.
 
-Controllo del servizio:
+Checking the service:
 
 ```bash
 adb shell dumpsys activity services it.ntsciccio.ntsfiretv
 ```
 
-Per disattivarlo:
+To disable it:
 
 ```bash
 adb shell appops set it.ntsciccio.ntsfiretv GET_USAGE_STATS default
 adb shell am force-stop it.ntsciccio.ntsfiretv
 ```
 
-## Home: recenti, dock personalizzata, meteo
+## Home: recents, custom dock, weather
 
-- **Continua a guardare**: se c'è un video lasciato a metà in VLC e il file è raggiungibile (chiavetta collegata),
-  è la prima tile della riga Recenti; OK lo riprende dal punto salvato.
-- **Chiavetta USB**: con una chiavetta o un disco collegato compare in alto a sinistra un pannello con nome e
-  spazio libero; OK apre il file browser dei video direttamente lì. Sparisce quando la si stacca.
-- **Stato della stick** (Impostazioni): IP (con il comando `adb connect` pronto), Wi-Fi e segnale,
-  memoria e spazio liberi, versione di sistema.
-- **Recenti**: sopra la dock le ultime 5 app usate (esclude quelle già nella dock). Usa lo stesso permesso
-  del tasto Home; senza permesso la riga non compare.
-- **Tutte le app**: app divise in sezioni (Video, Musica, Giochi, Strumenti, Altre; categoria indovinata dal
-  pacchetto), pulsante **Ordina** (A–Z, Più usate, Recenti: usano l'appop `GET_USAGE_STATS`, senza restano A–Z)
-  e campo **Cerca** (tastiera della TV) che filtra per nome.
-- **Scorciatoie** sotto orologio e meteo: Rete, Telecomandi e Bluetooth, Applicazioni, La mia Fire TV
-  (pagine di Fire OS; se una non si apre, le impostazioni generali). Schermo e suoni, Preferenze e
-  Accessibilità non si possono aprire da un'app: richiedono il permesso Amazon `LAUNCHER_SETTINGS`.
-- **Tutte le app → tasto Menu ≡** su un'app: aggiungi/togli dalla dock, sposta in categoria, scegli un banner, nascondi.
-  Le app nascoste si rimettono da **Impostazioni → App nascoste**. Nel riordino della dock, Menu su
-  un'app aggiunta la toglie (le 6 tile predefinite restano). Con molte tile la dock scorre.
-- **Data** sotto l'orologio, nella lingua della stick.
-- **Meteo** (facoltativo): **Impostazioni → Meteo**, scrivi la città. Dati da [Open-Meteo](https://open-meteo.com)
-  (gratuito, senza account): si invia solo la città, poi le coordinate ogni 30 minuti. Unico uso di internet
-  dell'app (permesso `INTERNET`); spento finché non si sceglie una città.
-- **Backup**: **Impostazioni → Salva le impostazioni** scrive tema, temi utente, dock, app nascoste, sfondo,
-  banner in `NTSFireTV/backup/` nella memoria e su ogni chiavetta USB collegata. La città del meteo
-  non è inclusa (la posizione resterebbe leggibile da altre app): dopo un ripristino va riscritta.
-  **Ripristina** li rilegge (prima dalla chiavetta). Le posizioni dei video non sono incluse.
+- **Continua a guardare** (Continue watching): if a video was left half-watched in VLC and the file is reachable (USB stick plugged in),
+  it is the first tile of the Recenti (Recents) row; OK resumes it from the saved position.
+- **USB stick**: with a USB stick or disk plugged in, a panel with its name and free space appears in the top left;
+  OK opens the video file browser directly there. It disappears when the drive is unplugged.
+- **Stato della stick** (Stick status, in Settings): IP (with the `adb connect` command ready), Wi-Fi and signal,
+  free memory and storage, system version.
+- **Recenti** (Recents): above the dock, the last 5 apps used (excluding those already in the dock). Uses the same permission
+  as the Home button; without it the row doesn't appear.
+- **Tutte le app** (All apps): apps split into sections (Video, Musica, Giochi, Strumenti, Altre — Video, Music, Games, Tools, Other; category guessed from the
+  package name), an **Ordina** (Sort) button (A–Z, Più usate, Recenti — A–Z, Most used, Recent: these use the `GET_USAGE_STATS` appop, without it they stay A–Z)
+  and a **Cerca** (Search) field (TV keyboard) that filters by name.
+- **Shortcuts** below the clock and weather: Rete, Telecomandi e Bluetooth, Applicazioni, La mia Fire TV
+  (Network, Controllers & Bluetooth, Applications, My Fire TV — Fire OS pages; if one doesn't open, the general settings do). Display & Sounds, Preferences and
+  Accessibility can't be opened from an app: they require the Amazon `LAUNCHER_SETTINGS` permission.
+- **Tutte le app → Menu button ≡** on an app: add to/remove from the dock, move to a category, choose a banner, hide.
+  Hidden apps are restored from **Impostazioni → App nascoste** (Settings → Hidden apps). When reordering the dock, Menu on
+  an added app removes it (the 6 default tiles stay). With many tiles the dock scrolls.
+- **Date** below the clock, in the stick's language.
+- **Weather** (optional): **Impostazioni → Meteo** (Settings → Weather), type the city. Data from [Open-Meteo](https://open-meteo.com)
+  (free, no account): only the city is sent, then the coordinates every 30 minutes. The app's only use of the internet
+  (`INTERNET` permission); off until a city is chosen.
+- **Backup**: **Impostazioni → Salva le impostazioni** (Settings → Save settings) writes theme, user themes, dock, hidden apps, wallpaper,
+  banners to `NTSFireTV/backup/` in internal storage and on every plugged-in USB stick. The weather city
+  is not included (the location would be readable by other apps): it must be re-entered after a restore.
+  **Ripristina** (Restore) reads them back (from the USB stick first). Video positions are not included.
 
-## Memoria
+## Memory
 
-- L'elenco delle app e le loro immagini restano in una cache (max 8 MB), svuotata quando la home
-  non si vede; l'elenco si aggiorna da solo quando si installa o disinstalla un'app.
-- Se il sistema chiede memoria mentre si usa un'altra app, la home libera anche lo sfondo e lo ricarica al ritorno.
+- The app list and its images are kept in a cache (max 8 MB), cleared when the home
+  isn't visible; the list updates itself when an app is installed or uninstalled.
+- If the system asks for memory while another app is in use, the home also frees the wallpaper and reloads it on return.
 
-## Sfondi
+## Wallpapers
 
-Il tasto **Menu (≡)** del telecomando, nella home, apre il selettore sfondi (anche da Impostazioni → Sfondo).
-Le immagini (JPG, PNG, WebP) vengono cercate in:
+The remote's **Menu (≡)** button, on the home, opens the wallpaper picker (also from Impostazioni → Sfondo, Settings → Wallpaper).
+Images (JPG, PNG, WebP) are looked up in:
 
-- `/sdcard/NTSFireTV/wallpapers/` (creata dall'app al primo avvio del selettore)
-- radice e cartella `wallpapers/` di ogni chiavetta o disco USB
+- `/sdcard/NTSFireTV/wallpapers/` (created by the app the first time the picker opens)
+- the root and the `wallpapers/` folder of every USB stick or disk
 
-Copiare un'immagine dal computer:
+Copying an image from the computer:
 
 ```bash
 adb shell mkdir -p /sdcard/NTSFireTV/wallpapers
 adb push foto.jpg /sdcard/NTSFireTV/wallpapers/
-# oppure
+# or
 ./gradlew pushWallpaper -Pimage=foto.jpg
 ```
 
-L'immagine scelta viene ritagliata a 16:9, ridotta a 1920×1080 e salvata come copia interna
-(`files/wallpaper.jpg`): resta anche se si stacca la chiavetta. Scegliendo un'immagine si decide se usarla
-**sempre** oppure **solo di notte** (dalle 20 alle 7, `files/wallpaper_night.jpg`): la home cambia sfondo da sola.
-"Nero" mostra uno schermo nero (ideale per TV OLED); "Predefinito" torna a `wallpaper_default`.
+The chosen image is cropped to 16:9, scaled down to 1920×1080 and saved as an internal copy
+(`files/wallpaper.jpg`): it stays even if the USB stick is unplugged. When choosing an image you decide whether to use it
+**always** or **only at night** (from 20:00 to 7:00, `files/wallpaper_night.jpg`): the home switches wallpaper by itself.
+"Nero" (Black) shows a black screen (ideal for OLED TVs); "Predefinito" (Default) goes back to `wallpaper_default`.
 
-### Banner personalizzati
+### Custom banners
 
-In **Tutte le app**, il tasto **Menu ≡** su un'app apre lo stesso selettore immagini per sceglierne il banner
-(utile per le app installate a mano, che spesso hanno solo una piccola icona). Il banner viene ritagliato a 16:9
-e salvato in `files/banners/<package>.jpg`; vale anche nella dock. "Originale" torna al banner dell'app.
+In **Tutte le app**, the **Menu ≡** button on an app opens the same image picker to choose its banner
+(useful for sideloaded apps, which often only have a small icon). The banner is cropped to 16:9
+and saved in `files/banners/<package>.jpg`; it also applies in the dock. "Originale" (Original) goes back to the app's banner.
 
-> Nel repository ci sono solo sfondi originali. Immagini con personaggi o marchi protetti
-> vanno tenute in locale (cartella della stick o chiavetta), non nel repo.
+> The repository contains only original wallpapers. Images with protected characters or trademarks
+> must be kept locally (stick folder or USB stick), not in the repo.
 
-## Temi
+## Themes
 
-**Impostazioni → Tema** elenca il tema Predefinito, il tema integrato **Retrò** e quelli utente,
-più **Nuovo tema…** (editor nella TV, parte da una copia del tema attuale) e **Modifica** per i temi utente.
+**Impostazioni → Tema** (Settings → Theme) lists the Predefinito (Default) theme, the built-in **Retrò** theme and the user themes,
+plus **Nuovo tema…** (New theme…, an on-TV editor that starts from a copy of the current theme) and **Modifica** (Edit) for user themes.
 
-Nell'editor ogni voce si cambia con ◀ ▶ (OK passa al valore successivo) e l'anteprima a sinistra
-si aggiorna subito. "Salva e usa questo tema" scrive un file JSON in `/sdcard/NTSFireTV/themes/`.
+In the editor each entry is changed with ◀ ▶ (OK moves to the next value) and the preview on the left
+updates immediately. "Salva e usa questo tema" (Save and use this theme) writes a JSON file to `/sdcard/NTSFireTV/themes/`.
 
-Un tema si può anche scrivere a mano sul computer e copiare sulla stick:
+A theme can also be written by hand on the computer and copied to the stick:
 
 ```bash
 ./gradlew pushTheme -Ptheme=mio-tema.json
-# oppure
+# or
 adb shell mkdir -p /sdcard/NTSFireTV/themes
 adb push mio-tema.json /sdcard/NTSFireTV/themes/
 ```
 
-Formato (tutte le chiavi sono facoltative: quelle mancanti prendono il valore del tema Predefinito).
-I colori sono `#RRGGBB` oppure `#AARRGGBB` (AA = opacità, `FF` piena, `00` trasparente):
+Format (all keys are optional: missing ones take the value of the Predefinito theme).
+Colors are `#RRGGBB` or `#AARRGGBB` (AA = opacity, `FF` opaque, `00` transparent):
 
-| Chiave | Cosa colora |
+| Key | What it colors |
 |---|---|
-| `name` | Nome mostrato in Impostazioni → Tema |
-| `accent` | Selezione delle liste, pulsanti del widget |
-| `tile` / `tileFocused` | Fondo delle tile, normale e selezionata |
-| `tileBorder` / `focusBorder` | Bordo delle tile, normale e selezionata |
-| `cornerRadius` | Angoli in dp (0–40) |
-| `panel` | Pannello del widget "In riproduzione" |
-| `overlay` | Velo delle schermate sopra la home (Tutte le app, Video, Impostazioni…) |
-| `textSecondary` | Sottotitoli e messaggi |
+| `name` | Name shown in Impostazioni → Tema |
+| `accent` | List selection, widget buttons |
+| `tile` / `tileFocused` | Tile background, normal and selected |
+| `tileBorder` / `focusBorder` | Tile border, normal and selected |
+| `cornerRadius` | Corners in dp (0–40) |
+| `panel` | Panel of the "In riproduzione" widget |
+| `overlay` | Veil of the screens above the home (Tutte le app, Video, Impostazioni…) |
+| `textSecondary` | Subtitles and messages |
 | `clockFont` / `titleFont` | `light`, `regular`, `medium`, `bold`, `black`, `condensed`, `casual` |
-| `clockSize` | Dimensione dell'orologio in sp (20–96) |
-| `clockShadow` | Ombra/alone dell'orologio (`#00000000` = nessuno) |
-| `tileStyle` | `modern` (angoli del tema), `capsule` (a pillola), `classic` (squadrate, senza bordo), `premium` (alone colorato al focus) |
-| `doubleFocus` | `true`: al focus bordo esterno nel colore accento + bordo interno bianco, visibile su qualunque sfondo |
-| `homeScrim` | `false` toglie la sfumatura scura sotto la dock (utile su sfondi neri) |
-| `wallpaper` | Sfondo generato dai colori (vedi sotto); se manca resta lo sfondo scelto dall'utente |
+| `clockSize` | Clock size in sp (20–96) |
+| `clockShadow` | Clock shadow/glow (`#00000000` = none) |
+| `tileStyle` | `modern` (theme corners), `capsule` (pill-shaped), `classic` (square, no border), `premium` (colored glow on focus) |
+| `doubleFocus` | `true`: on focus, outer border in the accent color + inner white border, visible on any wallpaper |
+| `homeScrim` | `false` removes the dark gradient below the dock (useful on black wallpapers) |
+| `wallpaper` | Wallpaper generated from colors (see below); if missing, the user's chosen wallpaper stays |
 
-Lo sfondo del tema si attiva quando si sceglie il tema e resta finché non si sceglie un'immagine,
-"Nero" o "Predefinito" dal selettore (tasto Menu); la tile **Sfondo del tema** lo rimette.
-Viene disegnato una volta a 1920×1080 e tenuto in cache (`files/wallpaper_theme.png`):
+The theme wallpaper is activated when the theme is chosen and stays until an image,
+"Nero" or "Predefinito" is chosen from the picker (Menu button); the **Sfondo del tema** (Theme wallpaper) tile brings it back.
+It is drawn once at 1920×1080 and cached (`files/wallpaper_theme.png`):
 
 ```json
 "wallpaper": {
@@ -270,10 +270,10 @@ Viene disegnato una volta a 1920×1080 e tenuto in cache (`files/wallpaper_theme
 }
 ```
 
-`base` è la sfumatura di fondo (angolo come in CSS: 0 verso l'alto, 90 verso destra); ogni `blob` è una macchia
-sfocata con centro `x`,`y` e raggio `r` in % dello schermo; `stripes` (facoltativo) sono righe orizzontali in basso.
+`base` is the background gradient (angle as in CSS: 0 up, 90 right); each `blob` is a blurred
+spot with center `x`,`y` and radius `r` in % of the screen; `stripes` (optional) are horizontal stripes at the bottom.
 
-Esempio minimo (le chiavi non indicate restano quelle del Predefinito):
+Minimal example (keys not given stay as in Predefinito):
 
 ```json
 {
@@ -284,168 +284,168 @@ Esempio minimo (le chiavi non indicate restano quelle del Predefinito):
 }
 ```
 
-## Salvaschermo
+## Screensaver
 
-`ClockDreamService` è il salvaschermo nello stile del tema attivo: lo sfondo del tema con le macchie di
-colore che si spostano lentamente (circa 15 fotogrammi al secondo, attenuato da un velo scuro; con Retrò
-anche le righe di tramonto) e orologio grande, data e meteo con il font del tema, che cambiano posizione
-ogni 40 secondi con un movimento lento, per non lasciare segni sullo schermo. Fire OS usa il salvaschermo Amazon:
-il nostro si imposta via ADB ed è **attivo di default**: lo impostano `installStick`, `installStickRelease`,
-`enableServices` ed `enableScreensaver`. Prima di sostituirlo, il task salva il salvaschermo di Fire OS in
-`.ntsfiretv/salvaschermo-originale.txt` (nel progetto, escluso da git; solo la prima volta).
-Per tornare a quello di Amazon: `./gradlew restoreScreensaver`. A mano:
+`ClockDreamService` is the screensaver in the style of the active theme: the theme wallpaper with the color
+spots slowly moving (about 15 frames per second, dimmed by a dark veil; with Retrò
+also the sunset stripes) and a large clock, date and weather in the theme font, which change position
+every 40 seconds with a slow movement, to avoid leaving marks on the screen. Fire OS uses the Amazon screensaver:
+ours is set via ADB and is **on by default**: `installStick`, `installStickRelease`,
+`enableServices` and `enableScreensaver` set it. Before replacing it, the task saves the Fire OS screensaver to
+`.ntsfiretv/salvaschermo-originale.txt` (in the project, excluded from git; only the first time).
+To go back to Amazon's: `./gradlew restoreScreensaver`. By hand:
 
 ```bash
-adb shell settings get secure screensaver_components     # annota il valore, serve per tornare indietro
+adb shell settings get secure screensaver_components     # note the value, needed to go back
 adb shell settings put secure screensaver_components it.ntsciccio.ntsfiretv/it.ntsciccio.ntsfiretv.system.ClockDreamService
 adb shell settings put secure screensaver_enabled 1
 ```
 
-Per tornare al salvaschermo Amazon a mano: `settings put secure screensaver_components <valore annotato>`.
-Il tempo prima che parta si regola nelle impostazioni di Fire TV (Display e suoni → Salvaschermo).
-**Da verificare** sulla stick che Fire OS rispetti l'impostazione (potrebbe ignorarla o annullarla).
+To go back to the Amazon screensaver by hand: `settings put secure screensaver_components <valore annotato>`.
+The delay before it starts is set in the Fire TV settings (Display & Sounds → Screensaver).
+**To be verified** on the stick that Fire OS honors the setting (it might ignore or reset it).
 
-### Crediti
+### Credits
 
-Il tema Retrò usa i colori della palette [Gruvbox](https://github.com/morhetz/gruvbox) (licenza MIT);
-lo sfondo è generato, nessuna immagine esterna.
+The Retrò theme uses the colors of the [Gruvbox](https://github.com/morhetz/gruvbox) palette (MIT license);
+the wallpaper is generated, no external images.
 
-## Video da USB e VLC
+## USB videos and VLC
 
-La tile **Video** apre il file browser: memorie → cartelle → file video
-(mkv, mp4, m4v, avi, mov, webm, ts). Indietro risale di una cartella.
+The **Video** tile opens the file browser: storage → folders → video files
+(mkv, mp4, m4v, avi, mov, webm, ts). Back goes up one folder.
 
-- **Hardware:** serve un adattatore **OTG con alimentazione passante** (la stick ha una sola micro-USB).
-  Gli **HDD meccanici** assorbono troppa corrente: usali solo con un **hub USB alimentato**.
-- **File system:** FAT32 ed exFAT dovrebbero funzionare; NTFS spesso no su Fire OS. Da verificare
-  sulla stick con una chiavetta per tipo.
-- Se Fire OS propone di **formattare** la chiavetta come memoria interna, rispondi di no.
+- **Hardware:** you need an **OTG adapter with power passthrough** (the stick has a single micro-USB port).
+  **Mechanical HDDs** draw too much current: use them only with a **powered USB hub**.
+- **File system:** FAT32 and exFAT should work; NTFS often doesn't on Fire OS. To be verified
+  on the stick with one USB stick per type.
+- If Fire OS offers to **format** the USB stick as internal storage, say no.
 
-I video si aprono con **VLC** (`org.videolan.vlc`, dall'Appstore Amazon), tramite un ContentProvider
-interno in sola lettura (`content://it.ntsciccio.ntsfiretv.files/...`). Alla chiusura VLC
-restituisce la posizione: nella lista compare "In corso · 12:34 di 1:45:00" e alla
-riapertura si sceglie **Riprendi** o **Dall'inizio**. Un video visto quasi fino alla fine
-viene considerato finito.
+Videos open with **VLC** (`org.videolan.vlc`, from the Amazon Appstore), through an internal read-only
+ContentProvider (`content://it.ntsciccio.ntsfiretv.files/...`). When closed, VLC
+returns the position: the list shows "In corso · 12:34 di 1:45:00" (In progress · 12:34 of 1:45:00) and on
+reopening you choose **Riprendi** (Resume) or **Dall'inizio** (From the start). A video watched almost to the end
+is considered finished.
 
-## Widget "In riproduzione"
+## "In riproduzione" widget
 
-Sopra la dock compaiono titolo e artista di quello che suona (Spotify o altri player
-con una MediaSession), con i pulsanti precedente / play-pausa / successivo raggiungibili col D-pad.
+Above the dock appear the title and artist of what is playing (Spotify or other players
+with a MediaSession), with previous / play-pause / next buttons reachable with the D-pad.
 
-Per leggere le sessioni multimediali Android richiede un **notification listener** abilitato.
-`./gradlew enableServices` lo aggiunge senza togliere quelli già attivi. A mano:
+To read media sessions Android requires an enabled **notification listener**.
+`./gradlew enableServices` adds it without removing those already active. By hand:
 
 ```bash
 adb shell settings get secure enabled_notification_listeners
 ```
 
-- se risponde `null` o è vuoto:
+- if it returns `null` or is empty:
 
   ```bash
   adb shell settings put secure enabled_notification_listeners it.ntsciccio.ntsfiretv/it.ntsciccio.ntsfiretv.system.NowPlayingListenerService
   ```
 
-- altrimenti aggiungi il nostro componente alla lista esistente, separato da `:`.
+- otherwise append our component to the existing list, separated by `:`.
 
-Subito dopo, ripeti il `get`: se Fire OS ha annullato l'impostazione (come per l'accessibilità),
-il widget non può funzionare. Il listener non legge il contenuto delle notifiche.
+Right after, repeat the `get`: if Fire OS reset the setting (as with accessibility),
+the widget can't work. The listener doesn't read notification content.
 
-## Release firmata
+## Signed release
 
-1. Crea il keystore (una volta, conservalo fuori dal repo e fanne un backup):
+1. Create the keystore (once; keep it outside the repo and back it up):
 
    ```bash
    keytool -genkeypair -v -keystore ~/ntsfiretv.jks -alias ntsfiretv -keyalg RSA -keysize 4096 -validity 10000
    ```
 
-2. Crea `keystore.properties` nella root del progetto (è in `.gitignore`):
+2. Create `keystore.properties` in the project root (it is in `.gitignore`):
 
    ```properties
-   storeFile=/percorso/assoluto/ntsfiretv.jks
+   storeFile=/absolute/path/ntsfiretv.jks
    storePassword=...
    keyAlias=ntsfiretv
    keyPassword=...
    ```
 
-3. Compila: `./gradlew assembleRelease` → `app/build/outputs/apk/release/app-release.apk`.
-   Senza `keystore.properties` esce `app-release-unsigned.apk`, non installabile.
+3. Build: `./gradlew assembleRelease` → `app/build/outputs/apk/release/app-release.apk`.
+   Without `keystore.properties` you get `app-release-unsigned.apk`, which can't be installed.
 
-4. Passaggio dalla debug alla release sulla stick (una volta sola, le firme sono diverse):
+4. Switching from debug to release on the stick (only once, the signatures differ):
 
    ```bash
-   # prima, sulla TV: NTSFireTV → Impostazioni → Salva le impostazioni
-   adb uninstall it.ntsciccio.ntsfiretv              # toglie la debug (si perdono tema, dock, sfondo scelto)
-   ./gradlew installStickRelease -Pstick=<IP>:5555   # installa la release, ridà i permessi, apre la home
+   # first, on the TV: NTSFireTV → Impostazioni → Salva le impostazioni
+   adb uninstall it.ntsciccio.ntsfiretv              # removes the debug build (theme, dock, chosen wallpaper are lost)
+   ./gradlew installStickRelease -Pstick=<IP>:5555   # installs the release, re-grants permissions, opens the home
    ```
 
-   Poi **Impostazioni → Ripristina le impostazioni** per riavere tema, dock, sfondo e banner.
-   Da lì in avanti si aggiorna sempre con `installStickRelease` (niente più disinstallazioni).
+   Then **Impostazioni → Ripristina le impostazioni** (Settings → Restore settings) to get theme, dock, wallpaper and banners back.
+   From then on, always update with `installStickRelease` (no more uninstalls).
 
-La release usa R8 e la rimozione delle risorse inutilizzate (APK di ~150 KB contro ~1 MB della debug).
+The release uses R8 and unused resource shrinking (~150 KB APK versus ~1 MB for debug).
 
-> La debug e la release hanno firme diverse: per passare dall'una all'altra serve
-> `adb uninstall it.ntsciccio.ntsfiretv`, e poi vanno ridati i permessi (`./gradlew enableServices`).
+> Debug and release have different signatures: switching between them requires
+> `adb uninstall it.ntsciccio.ntsfiretv`, and then the permissions must be granted again (`./gradlew enableServices`).
 
-Pubblicazione su GitHub Releases: crea un tag `vX.Y`, poi una release dal tag allegando l'APK firmato
-(rinominato `NTSFireTV.apk`, come indicato nel README).
+The signed release is only for your own stick: the project doesn't publish APKs
+(it is always installed by building from source, see README).
 
-## Misure (RAM e avvio)
+## Measurements (RAM and startup)
 
 ```bash
-adb shell dumpsys meminfo it.ntsciccio.ntsfiretv            # "TOTAL PSS": memoria usata
+adb shell dumpsys meminfo it.ntsciccio.ntsfiretv            # "TOTAL PSS": memory used
 adb shell am force-stop it.ntsciccio.ntsfiretv
-adb shell am start -W -n it.ntsciccio.ntsfiretv/.home.HomeActivity   # "TotalTime": avvio a freddo in ms
+adb shell am start -W -n it.ntsciccio.ntsfiretv/.home.HomeActivity   # "TotalTime": cold start in ms
 ```
 
-Misure del 30/10/2026 (debug): avvio a freddo 358 ms, CPU del controllo tasto Home ~0%, RAM ~120 MB prima delle riduzioni.
+Measurements from 2026-10-30 (debug): cold start 358 ms, Home button watcher CPU ~0%, RAM ~120 MB before the reductions.
 
-Accorgimenti già presenti: foto di sfondo a 1920×1080 in RGB_565 (~4 MB), sfondo del tema a 960×540 (~2 MB), cache immagini app 4 MB, miniature a 256×144,
-caricamenti fuori dal thread UI, polling del tasto Home sospeso a schermo spento,
-widget "In riproduzione" attivo solo con la home visibile.
+Measures already in place: wallpaper photo at 1920×1080 in RGB_565 (~4 MB), theme wallpaper at 960×540 (~2 MB), app image cache 4 MB, thumbnails at 256×144,
+loading off the UI thread, Home button polling suspended while the screen is off,
+"In riproduzione" widget active only while the home is visible.
 
-## Test
+## Tests
 
 ```bash
-./gradlew test        # test sul computer, pochi secondi, non serve la stick
+./gradlew test        # tests on the computer, a few seconds, no stick needed
 ```
 
-Report: `app/build/reports/tests/testDebugUnitTest/index.html`. Coprono le parti senza classi Android:
-lettura dei colori, temi e sfondi in JSON (tutti i temi integrati salvati e riletti), descrizioni del meteo,
-formato dei tempi e regola del "Riprendi", nomi file dei temi. Usano JUnit 4 e org.json solo per i test
-(non finiscono nell'APK).
+Report: `app/build/reports/tests/testDebugUnitTest/index.html`. They cover the parts without Android classes:
+color parsing, themes and wallpapers in JSON (all built-in themes saved and read back), weather descriptions,
+time formatting and the "Riprendi" rule, theme file names. They use JUnit 4 and org.json for tests only
+(not included in the APK).
 
-Le funzioni sulla stick (tasto Home, temi, salvaschermo…) si verificano a mano o con `adb` + screenshot:
-`adb exec-out screencap -p > schermo.png`. Nota: il tasto Menu simulato (`input keyevent KEYCODE_MENU`)
-non arriva alle app su Fire OS, va premuto sul telecomando vero.
+Features on the stick (Home button, themes, screensaver…) are checked by hand or with `adb` + screenshots:
+`adb exec-out screencap -p > schermo.png`. Note: a simulated Menu button (`input keyevent KEYCODE_MENU`)
+doesn't reach apps on Fire OS; it must be pressed on the real remote.
 
-## Log
+## Logs
 
 ```bash
-./gradlew logs                                                  # solo i log di NTSFireTV
+./gradlew logs                                                  # NTSFireTV logs only
 adb logcat --pid=$(adb shell pidof -s it.ntsciccio.ntsfiretv)   # macOS / Linux
-adb logcat *:E                                                  # solo errori, ovunque
+adb logcat *:E                                                  # errors only, everywhere
 ```
 
-## Disinstallazione
+## Uninstalling
 
 ```bash
 adb uninstall it.ntsciccio.ntsfiretv
 ```
 
-## Problemi comuni
+## Troubleshooting
 
-| Problema | Soluzione |
+| Problem | Solution |
 |---|---|
-| `unauthorized` | Accetta il popup sulla TV. Se non compare: `adb kill-server`, poi riconnetti |
-| `failed to connect` / `offline` | Verifica IP e che Debug ADB sia attivo; stessa rete di PC e TV |
-| `more than one device/emulator` | Indica il dispositivo: `adb -s <IP>:5555 ...` oppure `-Pstick=<IP>:5555` nei task |
-| `INSTALL_FAILED_UPDATE_INCOMPATIBLE` | Firma diversa: `adb uninstall it.ntsciccio.ntsfiretv` e reinstalla |
-| Sync Gradle fallisce su AGP | Versione AGP non supportata da IntelliJ: abbassala in `gradle/libs.versions.toml` |
-| Il tasto Home porta alla home Amazon | Permesso `GET_USAGE_STATS` perso (es. dopo una disinstallazione): `./gradlew enableServices` |
-| Nessuna chiavetta nel file browser | Alimentazione OTG insufficiente o file system NTFS; prova un'altra chiavetta FAT32/exFAT |
+| `unauthorized` | Accept the popup on the TV. If it doesn't appear: `adb kill-server`, then reconnect |
+| `failed to connect` / `offline` | Check the IP and that ADB Debugging is on; PC and TV on the same network |
+| `more than one device/emulator` | Specify the device: `adb -s <IP>:5555 ...` or `-Pstick=<IP>:5555` in the tasks |
+| `INSTALL_FAILED_UPDATE_INCOMPATIBLE` | Different signature: `adb uninstall it.ntsciccio.ntsfiretv` and reinstall |
+| Gradle sync fails on AGP | AGP version not supported by IntelliJ: lower it in `gradle/libs.versions.toml` |
+| The Home button goes to the Amazon home | `GET_USAGE_STATS` permission lost (e.g. after an uninstall): `./gradlew enableServices` |
+| No USB stick in the file browser | Insufficient OTG power or NTFS file system; try another FAT32/exFAT USB stick |
 
-## Convenzioni
+## Conventions
 
-- Ogni file sorgente inizia con `// SPDX-License-Identifier: GPL-3.0-or-later`
-- Solo View del framework (`android.app.Activity`), niente AppCompat/Material
-- Package per funzionalità: `home`, `apps`, `wallpaper`, `media`, `system`
+- Every source file starts with `// SPDX-License-Identifier: GPL-3.0-or-later`
+- Framework Views only (`android.app.Activity`), no AppCompat/Material
+- Packages by feature: `home`, `apps`, `wallpaper`, `media`, `system`

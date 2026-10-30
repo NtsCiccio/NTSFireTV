@@ -32,7 +32,7 @@
 #   com.amazon.device.crashmanager, com.amazon.diode, com.amazon.ftvads.deeplinking,
 #   com.amazon.tcomm, com.amazon.tv.csapp
 
-[telemetria] Statistiche, metriche e log inviati ad Amazon
+[telemetria] Statistics, metrics and logs sent to Amazon
 com.amazon.client.metrics.api              # metrics
 com.amazon.metrics.api                     # metrics
 com.amazon.tv.fw.metrics                   # TV system metrics
@@ -43,7 +43,7 @@ com.amazon.ceviche                         # data collection
 com.amazon.tv.developer.dataservice        # personalization data
 com.amazon.wifilocker                      # saves Wi-Fi passwords to Amazon's cloud
 
-[pubblicita] Pubblicità, contenuti sponsorizzati, promozioni
+[pubblicita] Ads, sponsored content, promotions
 com.amazon.kso.blackbird                   # syncs the Amazon home's ads
 com.amazon.sneakpeek                       # promotional previews
 com.amazon.hybridadidservice               # advertising ID
@@ -59,7 +59,7 @@ com.amazon.gamehub                         # games showcase
 com.amazon.imdb.tv.android.app             # Freevee (redirect)
 com.amazon.minitv.android.app              # miniTV (redirect)
 
-[app-amazon] App e servizi Amazon preinstallati poco usati
+[app-amazon] Rarely used preinstalled Amazon apps and services
 com.amazon.tahoe                           # Amazon Kids
 com.amazon.bueller.music                   # Amazon Music
 com.amazon.bueller.photos                  # Amazon Photos
@@ -76,21 +76,21 @@ com.amazon.whisperjoin.wss.wifiprovisioner # Wi-Fi setup from the Alexa app
 com.amazon.tv.ffsprovisioneeclient         # automatic device setup
 com.amazon.ods.kindleconnect               # Kindle link
 
-[alexa] Extra di Alexa (la ricerca vocale col telecomando resta)
+[alexa] Alexa extras (voice search with the remote keeps working)
 com.amazon.tv.alexaalerts                  # Alexa alarms and timers on the TV
 com.amazon.tv.alexanotifications           # Alexa notifications
 com.amazon.alexa.externalmediaplayer.fireos  # Alexa commands to other apps
 com.amazon.alexamediaplayer.runtime.ftv    # Alexa as a music player
 com.amazon.aiondec                         # Alexa service
 
-[notifiche] Avvisi e note di sistema
+[notifiche] System notices and tips
 com.amazon.privacypassservice              # privacy pass service
 com.amazon.providers.contentsupport        # content support
 com.amazon.systemnotices                   # system notices
 com.amazon.tv.releasenotes                 # release notes
 com.amazon.uxnotification                  # promotional notifications
 
-[streaming] App di streaming preinstallate: togli il # SOLO da quelle che non usi
+[streaming] Preinstalled streaming apps: remove the # ONLY from the ones you don't use
 com.tubitv.ott                            # Tubi
 tv.pluto.android                          # Pluto TV
 com.hulu.plus                             # Hulu
@@ -100,7 +100,7 @@ com.peacock.peacockfiretv                 # Peacock
 com.espn.gtv                              # ESPN
 com.fubo.firetv.screen                    # Fubo
 
-[opz-aggiornamenti] Aggiornamenti di Fire OS (OTA): solo con -Pgruppo=opz-aggiornamenti
+[opz-aggiornamenti] Fire OS (OTA) updates: only with -Pgruppo=opz-aggiornamenti
 # Probably protected on Fire OS 6.7 (they will be "rifiutati"/refused): trying does no harm.
 # Blocking them keeps the stick on the version tested with NTSFireTV, but without security fixes.
 com.amazon.device.software.ota             # update check and download

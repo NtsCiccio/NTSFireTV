@@ -6,7 +6,7 @@ No telemetry, no ads, no third-party runtime libraries: plain Kotlin and Android
 ![Home screen](docs/screenshots/home.jpg)
 
 > ⚠️ Personal project, tested only on the Fire TV Stick 4K (1st gen, *mantis*) with Fire OS 6.7.1.1.
-> The user interface is currently **Italian only**; the developer guide is in Italian too.
+> The user interface is currently **Italian only** (translations are welcome).
 >
 > NTSFireTV is not affiliated with, endorsed by or sponsored by Amazon. Fire TV is a trademark of Amazon.com, Inc.
 
@@ -42,10 +42,13 @@ NTSFireTV doesn't include a player or browser: it relies on external apps, mostl
 
 ## Installation
 
+There are no prebuilt APKs: NTSFireTV is built from source and installed over ADB with one Gradle task.
+
 ### Requirements
 
 - A Fire TV Stick with Fire OS 6 or later
-- A computer with `adb` ([Android Platform-Tools](https://developer.android.com/tools/releases/platform-tools))
+- A computer (macOS, Linux or Windows) with **JDK 17** and the **Android SDK** (compileSdk 36),
+  e.g. from Android Studio or IntelliJ IDEA; `adb` comes with the SDK platform-tools
 - The Fire TV and the computer on the same network
 
 ### 1. Prepare the Fire TV
@@ -59,21 +62,28 @@ If "Developer options" is missing: Settings → My Fire TV → About, then click
 
 Settings → My Fire TV → About → **Network** → "IP Address".
 
-### 3. Install the APK
-
-Download the APK from the [Releases](../../releases) page, then:
+### 3. Build and install
 
 ```bash
-adb connect <IP-FIRE-TV>:5555
-adb install NTSFireTV.apk
+git clone https://github.com/NtsCiccio/NTSFireTV.git
+cd NTSFireTV
+./gradlew installStick -Pstick=<IP-FIRE-TV>:5555      # Windows: gradlew.bat installStick -Pstick=...
 ```
 
 On the first connection the TV shows a prompt: choose **Allow** (tick "Always allow from this computer").
 
-### 4. Grant the permissions
+`installStick` builds the app, installs it, installs the TV Bro browser if missing, grants all the permissions,
+sets the NTSFireTV screensaver and opens the home. It also **debloats** the stick (disables Amazon telemetry,
+ads and unused services, reversible with `./gradlew restoreBloat`): add `-Pdebloat=false` to skip it.
+See [tools/README.md](tools/README.md) for the full list.
+
+From now on the Home button goes back to NTSFireTV, even after a reboot.
+The status of each permission is shown in **NTSFireTV → Impostazioni** (Settings).
+
+### Permissions granted by `installStick`
 
 Fire OS doesn't let you change the home app or grant some permissions from its settings,
-so they are granted once over ADB:
+so they are granted over ADB. If you install the APK another way, grant them by hand:
 
 ```bash
 # Home button brings you back to NTSFireTV
@@ -86,20 +96,8 @@ adb shell pm grant it.ntsciccio.ntsfiretv android.permission.WRITE_EXTERNAL_STOR
 adb shell settings put secure enabled_notification_listeners it.ntsciccio.ntsfiretv/it.ntsciccio.ntsfiretv.system.NowPlayingListenerService
 ```
 
-Then open NTSFireTV: from now on the Home button goes back to it, even after a reboot.
-The status of each permission is shown in **NTSFireTV → Impostazioni** (Settings).
-
-### Building from source
-
-With JDK 17 and the Android SDK, a single Gradle task builds, installs, grants all the permissions,
-sets the screensaver and (optionally) debloats the stick:
-
-```bash
-./gradlew installStick -Pstick=<IP-FIRE-TV>:5555
-```
-
-See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) (Italian) for all tasks, themes, signed releases and troubleshooting,
-and [tools/README.md](tools/README.md) for debloating.
+See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for all Gradle tasks, themes, a signed release build
+for your own stick, and troubleshooting.
 
 ## Contributing
 
