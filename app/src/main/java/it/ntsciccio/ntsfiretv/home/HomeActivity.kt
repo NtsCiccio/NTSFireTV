@@ -3,12 +3,14 @@ package it.ntsciccio.ntsfiretv.home
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.Settings
@@ -16,6 +18,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import it.ntsciccio.ntsfiretv.R
 import java.io.File
@@ -45,6 +48,8 @@ import java.util.concurrent.Executors
 /**
  * Main launcher screen: wallpaper (Menu key to change it), clock with date and weather,
  * "In riproduzione" (Now playing) widget, "Recenti" (Recents) row and dock. Starts [HomeWatcherService] for the Home key.
+ * With the child lock on ([HomePreferences.childLock]) Settings and the Fire OS shortcuts are hidden;
+ * holding Menu for 3 seconds opens Settings to turn it off.
  *
  * Everything that reads apps, images or network runs in the background; the view updates on return.
  */
@@ -57,6 +62,10 @@ class HomeActivity : Activity() {
     private lateinit var recentsRow: LinearLayout
     private lateinit var weatherView: TextView
     private lateinit var usbPanel: View
+    private lateinit var shortcuts: View
+    private lateinit var memoryMeter: View
+    /** Menu held with the child lock on: Settings opened once per press. */
+    private var unlockOpened = false
     /** Video opened in VLC from "Continua a guardare" (Continue watching), to save its position on return. */
     private var playingPath: String? = null
     private lateinit var wallpaperRepository: WallpaperRepository
@@ -83,6 +92,7 @@ class HomeActivity : Activity() {
                 refreshWallpaper()
             }
             refreshWeather()
+            refreshMemory()
         }
     }
 
@@ -113,6 +123,8 @@ class HomeActivity : Activity() {
             background = ThemeStyler.tileBackground(this@HomeActivity, theme)
             ThemeStyler.styleSecondary(findViewById(R.id.usb_subtitle), theme)
         }
+        shortcuts = findViewById(R.id.shortcuts)
+        memoryMeter = findViewById(R.id.memory_meter)
         setupShortcuts(theme)
 
         AppCatalog.watchPackages(this)
@@ -150,6 +162,8 @@ class HomeActivity : Activity() {
         refreshWallpaper()
         refreshWeather()
         refreshUsb()
+        refreshMemory()
+        shortcuts.visibility = if (HomePreferences.childLock(this)) View.GONE else View.VISIBLE
     }
 
     override fun onStop() {
@@ -181,22 +195,37 @@ class HomeActivity : Activity() {
     // Fire OS 6 (API 25) has no Android 13+ predictive back: onKeyDown is enough
     @SuppressLint("GestureBackNavigation")
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean = when (keyCode) {
-        // Being the home, the Back key must not close it
-        KeyEvent.KEYCODE_BACK -> true
+        // Being the home, the Back key must not close it: it goes back to the first dock tile
+        KeyEvent.KEYCODE_BACK -> {
+            dock.getChildAt(0)?.requestFocus()
+            true
+        }
         KeyEvent.KEYCODE_MENU -> {
-            startActivity(Intent(this, WallpaperPickerActivity::class.java))
+            if (!HomePreferences.childLock(this)) {
+                if (event?.repeatCount == 0) startActivity(Intent(this, WallpaperPickerActivity::class.java))
+            } else if (event != null && !unlockOpened && event.eventTime - event.downTime >= UNLOCK_HOLD_MS) {
+                // Held long enough (the key repeats while held): Settings, where the lock is turned off
+                unlockOpened = true
+                startActivity(Intent(this, SettingsActivity::class.java))
+            }
             true
         }
         else -> super.onKeyDown(keyCode, event)
     }
 
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_MENU) unlockOpened = false
+        return super.onKeyUp(keyCode, event)
+    }
+
     /** Rebuilds the dock only if the saved order changed (no needless PackageManager reads). */
     private fun refreshDockOrder() {
-        val key = DockPreferences.orderKey(this)
+        val locked = HomePreferences.childLock(this)
+        val key = DockPreferences.orderKey(this) + if (locked) "|locked" else ""
         if (dockBuilt && key == dockOrderKey) return
         dockBuilt = true
         dockOrderKey = key
-        buildDock(DockPreferences.load(this))
+        buildDock(DockPreferences.load(this).filterNot { locked && it.target == DockTarget.Settings })
     }
 
     private fun buildDock(items: List<DockItem>) {
@@ -335,6 +364,29 @@ class HomeActivity : Activity() {
         }
     }
 
+    /** Free memory under the clock, if turned on: cheap to read, updated on return and every minute. */
+    private fun refreshMemory() {
+        if (!HomePreferences.memoryMeter(this)) {
+            memoryMeter.visibility = View.GONE
+            return
+        }
+        val info = ActivityManager.MemoryInfo()
+        getSystemService(ActivityManager::class.java)?.getMemoryInfo(info)
+        val low = MemoryMeter.isLow(info.availMem, info.totalMem, info.lowMemory)
+        val free = Formatter.formatShortFileSize(this, info.availMem)
+        val total = Formatter.formatShortFileSize(this, info.totalMem)
+        val theme = ThemeStore.current(this)
+        memoryMeter.findViewById<TextView>(R.id.memory_meter_text).apply {
+            text = getString(if (low) R.string.memory_meter_low else R.string.memory_meter, free, total)
+            setTextColor(if (low) getColor(R.color.memory_low) else theme.textSecondary)
+        }
+        memoryMeter.findViewById<ProgressBar>(R.id.memory_meter_bar).apply {
+            progress = MemoryMeter.usedPercent(info.availMem, info.totalMem)
+            progressTintList = ColorStateList.valueOf(if (low) getColor(R.color.memory_low) else theme.accent)
+        }
+        memoryMeter.visibility = View.VISIBLE
+    }
+
     /** Weather below the clock: cached data right away, network update every 30 minutes. */
     private fun refreshWeather() {
         showWeather(Weather.cached(this))
@@ -416,6 +468,8 @@ class HomeActivity : Activity() {
     private companion object {
         const val STATE_PLAYING = "playing"
         const val MAX_RECENTS = 5
+        /** How long Menu must be held, with the child lock on, to open Settings. */
+        const val UNLOCK_HOLD_MS = 3000L
         val SHORTCUTS = listOf(
             R.id.shortcut_network to Settings.ACTION_WIFI_SETTINGS,
             R.id.shortcut_controllers to "android.settings.CONTROLLERS_SETTINGS",

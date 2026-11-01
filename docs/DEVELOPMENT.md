@@ -92,16 +92,19 @@ With `-Pstick=IP:5555` they connect to the stick first and use it as the device.
 
 | Task | What it does |
 |---|---|
-| `installStick` | `installDebug` + browser (if missing) + permissions + notification listener + clock screensaver + debloat (all groups + blocking of forced updates; `-Pdebloat=false` skips it) + launches the home |
+| `installStick` | `installDebug` + browser (installed or updated) + permissions + notification listener + clock screensaver + debloat (all groups + blocking of forced updates) + privacy settings (`-Pdebloat=false` skips both) + launches the home |
 | `installStickRelease` | Like `installStick`, but with the signed release (needs `keystore.properties`, see Signed release) |
-| `installBrowser` | Installs **TV Bro** if missing: official APK from GitHub (WebView variant, the lightest), downloaded once into `app/build/external/` and verified with SHA-256 |
+| `installBrowser` | Installs **TV Bro**, or updates it when the version pinned in `app/build.gradle.kts` differs: official APK from GitHub (WebView variant, the lightest), downloaded once into `app/build/external/` and verified with SHA-256 |
 | `enableServices` | Permissions and notification listener only (e.g. after a reinstall) |
 | `pushWallpaper -Pimage=foto.jpg` | Copies an image to `/sdcard/NTSFireTV/wallpapers/` |
 | `pushTheme -Ptheme=tema.json` | Copies a theme to `/sdcard/NTSFireTV/themes/` (see Themes) |
 | `enableScreensaver` | Sets the clock screensaver (see Screensaver) |
 | `restoreScreensaver` | Restores the Fire OS screensaver saved before replacing it |
 | `logs` | `adb logcat -s NTSFireTV` (Ctrl+C to exit) |
-| `debloat -Pgruppo=nome` / `restoreBloat` | Disables / re-enables the Amazon services in `tools/debloat.txt` (see tools/README.md) |
+| `debloat -Pgruppo=nome` / `restoreBloat` | Disables / re-enables the Amazon services in `tools/debloat.txt`; without `-Pgruppo` also applies / restores the privacy settings (see tools/README.md) |
+| `privacy` / `restorePrivacy` | Ad tracking and usage data off, protected Amazon packages stopped in the background (`tools/privacy.txt`); original values saved in `.ntsfiretv/` |
+| `dnsFilter` / `restoreDnsFilter` | Installs / removes the on-device DNS filter (personalDNSfilter): blocks Amazon telemetry, updates and ads plus common ad domains, for every app (see tools/README.md) |
+| `verifyStick` | Checks permissions, services, browser, debloat, privacy and DNS filter, and says what to run for anything missing |
 | `connectStick -Pstick=IP:5555` | `adb connect` only |
 
 ## Permissions to grant via ADB
@@ -171,11 +174,19 @@ adb shell am force-stop it.ntsciccio.ntsfiretv
   Hidden apps are restored from **Impostazioni → App nascoste** (Settings → Hidden apps). When reordering the dock, Menu on
   an added app removes it (the 6 default tiles stay). With many tiles the dock scrolls.
 - **Date** below the clock, in the stick's language.
+- **Memory meter** (optional): **Impostazioni → Memoria nella home** (Settings → Memory on the home) shows the free memory under
+  the clock, with a bar of what is in use; it turns amber when Android reports low memory or less than 15% is free.
+  It only shows the numbers: it frees nothing.
+- **Back** on the home moves the focus to the first dock tile.
+- **Blocco bambini** (Child lock, in Settings): hides the Settings tile, the Fire OS shortcuts and the app menus, so the home only
+  opens apps. To unlock: hold **Menu (≡)** for 3 seconds on the home, then Settings → Blocco bambini. It is not a PIN:
+  holding Home still opens the Fire OS quick menu.
+- **Filtro DNS** (DNS filter, in Settings): shows whether the on-device filter is active and the command to install it.
 - **Weather** (optional): **Impostazioni → Meteo** (Settings → Weather), type the city. Data from [Open-Meteo](https://open-meteo.com)
   (free, no account): only the city is sent, then the coordinates every 30 minutes. The app's only use of the internet
   (`INTERNET` permission); off until a city is chosen.
 - **Backup**: **Impostazioni → Salva le impostazioni** (Settings → Save settings) writes theme, user themes, dock, hidden apps, wallpaper,
-  banners to `NTSFireTV/backup/` in internal storage and on every plugged-in USB stick. The weather city
+  banners, home options to `NTSFireTV/backup/` in internal storage and on every plugged-in USB stick. The weather city
   is not included (the location would be readable by other apps): it must be re-entered after a restore.
   **Ripristina** (Restore) reads them back (from the USB stick first). Video positions are not included.
 

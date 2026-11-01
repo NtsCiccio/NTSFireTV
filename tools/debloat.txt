@@ -13,7 +13,8 @@
 # `./gradlew restoreBloat` re-enables them all.
 #
 # Based on: the CleanYourTV project's list for this stick (github.com/Gathin23/cleanyourtv),
-# revised for NTSFireTV.
+# revised for NTSFireTV, plus packages from the dumbtv project's Fire OS 6 list
+# (github.com/humblemuzzu/dumbtv, MIT), checked by them on this same stick model.
 #
 # NEVER DISABLE (left out of this list on purpose):
 #   com.amazon.tv.launcher        Amazon home (protected; NTSFireTV relies on it)
@@ -26,6 +27,7 @@
 #   com.amazon.tv.oobe            initial setup (needed after a reset)
 #   com.amazon.spotify.mediabrowserservice   Spotify integration
 #   com.amazon.firebat            Prime Video
+#   com.amazon.whisperjoin.middleware.np   pairing new remotes and devices
 #
 # PROTECTED (Fire OS refuses to disable them, no point trying):
 #   com.amazon.client.metrics, com.amazon.device.metrics, com.amazon.device.logmanager,
@@ -42,6 +44,9 @@ com.amazon.dp.logger                       # log upload
 com.amazon.ceviche                         # data collection
 com.amazon.tv.developer.dataservice        # personalization data
 com.amazon.wifilocker                      # saves Wi-Fi passwords to Amazon's cloud
+com.amazon.logan                           # log collection
+com.amazon.connectivitydiag                # network diagnostics upload
+com.amazon.katoch                          # experiments and remote configuration
 
 [pubblicita] Ads, sponsored content, promotions
 com.amazon.kso.blackbird                   # syncs the Amazon home's ads
@@ -71,10 +76,15 @@ com.amazon.storm.lightning.tutorial        # tutorial
 com.amazon.whad                            # multi-room audio (Echo)
 com.amazon.whasettings                     # multi-room audio (Echo)
 com.amazon.wha.mediabrowserservice         # multi-room audio (Echo)
-com.amazon.whisperjoin.middleware.np       # setup from the Alexa app
+#com.amazon.whisperjoin.middleware.np      # kept: needed to pair new remotes and devices
 com.amazon.whisperjoin.wss.wifiprovisioner # Wi-Fi setup from the Alexa app
 com.amazon.tv.ffsprovisioneeclient         # automatic device setup
 com.amazon.ods.kindleconnect               # Kindle link
+
+[inutili] Services a stick doesn't use (phone operators, SIM, factory tests)
+com.amznfuse.operatorredirection           # phone operator partner redirection
+com.android.carrierconfig                  # SIM settings (the stick has no SIM)
+com.mediatek.atci.service                  # MediaTek factory test service
 
 [alexa] Alexa extras (voice search with the remote keeps working)
 com.amazon.tv.alexaalerts                  # Alexa alarms and timers on the TV

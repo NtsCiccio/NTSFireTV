@@ -6,4 +6,6 @@
     <color name="text_secondary">#B3FFFFFF</color>
     <!-- Dimming of the screens on top of the home -->
     <color name="overlay_scrim">#D9000000</color>
+    <!-- Memory meter when memory is running low -->
+    <color name="memory_low">#FFFFB300</color>
 </resources>

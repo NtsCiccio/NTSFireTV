@@ -18,6 +18,7 @@ import android.widget.TextView
 import it.ntsciccio.ntsfiretv.R
 import it.ntsciccio.ntsfiretv.home.DockPreferences
 import it.ntsciccio.ntsfiretv.home.DockTileView
+import it.ntsciccio.ntsfiretv.home.HomePreferences
 import it.ntsciccio.ntsfiretv.home.OverlayActivity
 import it.ntsciccio.ntsfiretv.home.ThemeSpec
 import it.ntsciccio.ntsfiretv.home.ThemeStyler
@@ -103,7 +104,8 @@ class AllAppsActivity : OverlayActivity() {
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         val app = (currentFocus as? DockTileView)?.tag as? LaunchableApp
         if (keyCode == KeyEvent.KEYCODE_MENU && app != null) {
-            showAppMenu(app)
+            // Child lock: no dock, category, banner or hide changes
+            if (!HomePreferences.childLock(this)) showAppMenu(app)
             return true
         }
         // Back with an active search: first clears the search, then (on the second press) closes

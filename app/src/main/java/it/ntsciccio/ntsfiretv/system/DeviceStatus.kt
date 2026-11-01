@@ -3,6 +3,7 @@ package it.ntsciccio.ntsfiretv.system
 
 import android.app.ActivityManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Environment
@@ -26,6 +27,7 @@ data class DeviceStatus(
     companion object {
 
         private const val SIGNAL_LEVELS = 5
+        private const val DNS_FILTER_PACKAGE = "dnsfilter.android"
 
         fun read(context: Context): DeviceStatus {
             val memory = ActivityManager.MemoryInfo()
@@ -42,6 +44,21 @@ data class DeviceStatus(
                 storageTotal = storage.totalBytes,
                 system = "Android ${Build.VERSION.RELEASE} · ${Build.MODEL} · ${Build.DISPLAY}",
             )
+        }
+
+        /**
+         * On-device DNS filter (personalDNSfilter, `./gradlew dnsFilter`): installed, enabled and with its VPN
+         * tunnel up. Reads the network interfaces, no permissions needed.
+         */
+        fun dnsFilterActive(context: Context): Boolean {
+            val enabled = try {
+                context.packageManager.getApplicationInfo(DNS_FILTER_PACKAGE, 0).enabled
+            } catch (e: PackageManager.NameNotFoundException) {
+                false
+            }
+            return enabled && runCatching {
+                NetworkInterface.getNetworkInterfaces()?.toList().orEmpty().any { it.isUp && it.name.startsWith("tun") }
+            }.getOrDefault(false)
         }
 
         /** First private IPv4 address (Wi-Fi or Ethernet), no permissions needed. */

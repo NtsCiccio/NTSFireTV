@@ -23,7 +23,11 @@ No telemetry, no ads, no third-party runtime libraries: plain Kotlin and Android
 - **Now Playing** widget with play/pause/next for Spotify and other media apps
 - **Screensaver** in the style of the active theme
 - **Backup and restore** of all settings to a file
-- **Debloat tools**: Gradle tasks to disable Amazon telemetry, ads and unused services (reversible)
+- **Memory meter** and **child lock** (optional), Back on the home jumps to the first tile
+- **Debloat tools**: Gradle tasks to disable Amazon telemetry, ads and unused services, and to turn off ad tracking
+  and usage reporting (reversible)
+- **On-device DNS filter** (optional): blocks Amazon telemetry, updates and ads, plus common ad domains, for every app
+- **`verifyStick`**: one command that checks everything is still in place, e.g. after a Fire OS update
 
 | All apps | Screensaver |
 |---|---|
@@ -74,8 +78,15 @@ On the first connection the TV shows a prompt: choose **Allow** (tick "Always al
 
 `installStick` builds the app, installs it, installs the TV Bro browser if missing, grants all the permissions,
 sets the NTSFireTV screensaver and opens the home. It also **debloats** the stick (disables Amazon telemetry,
-ads and unused services, reversible with `./gradlew restoreBloat`): add `-Pdebloat=false` to skip it.
-See [tools/README.md](tools/README.md) for the full list.
+ads and unused services, turns off ad tracking and usage reporting; reversible with `./gradlew restoreBloat`):
+add `-Pdebloat=false` to skip it. See [tools/README.md](tools/README.md) for the full list.
+
+Optional, after the install:
+
+```bash
+./gradlew dnsFilter -Pstick=<IP-FIRE-TV>:5555      # on-device DNS filter (./gradlew restoreDnsFilter removes it)
+./gradlew verifyStick -Pstick=<IP-FIRE-TV>:5555    # checks that everything is in place
+```
 
 From now on the Home button goes back to NTSFireTV, even after a reboot.
 The status of each permission is shown in **NTSFireTV → Impostazioni** (Settings).
@@ -103,6 +114,13 @@ for your own stick, and troubleshooting.
 
 Issues and pull requests are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md).
 To report a security problem, see [SECURITY.md](SECURITY.md).
+
+## Credits
+
+Some ideas, the Fire OS 6 package checks and the DNS filter setup come from
+[dumbtv](https://github.com/humblemuzzu/dumbtv) (MIT). The DNS filter is
+[personalDNSfilter](https://github.com/IngoZenz/personaldnsfilter) with
+[HaGeZi's lists](https://github.com/hagezi/dns-blocklists).
 
 ## License
 

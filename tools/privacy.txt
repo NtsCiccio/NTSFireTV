@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Privacy settings for Fire OS, used by the Gradle tasks `privacy` and `restorePrivacy`
+# (also run by `debloat` without -Pgruppo, `installStick` and `restoreBloat`; see tools/README.md).
+# Idea and keys from the dumbtv project (github.com/humblemuzzu/dumbtv, MIT).
+#
+# The original values are saved once in .ntsfiretv/privacy-originali.txt (outside git),
+# so `restorePrivacy` puts back exactly what was there.
+
+[impostazioni] namespace key value, applied with `settings put`
+# Ad tracking and interest-based ads off
+secure amz_limit_ad_tracking 1
+secure limit_ad_tracking 1
+secure non_amz_limit_ad_tracking 1
+secure advertisingIdApp:interestBasedAds:value 0
+# Usage data sent to Amazon off
+secure USAGE_METRICS_UPLOAD_ENABLED 0
+secure usage_metrics_marketing_enabled 0
+secure settingsApp:appUsageData:value 0
+secure settingsApp:deviceUsageData:value 0
+# Pop-up notifications and autoplaying videos in the Amazon settings off
+global heads_up_notifications_enabled 0
+global com.amazon.tv.settings.featured_item_video_enabled 0
+global com.amazon.tv.settings.featured_item_video_volume 0.0
+# Shorter window animations: the stick feels faster. animator_duration_scale stays at 1.0
+# (at 0.5 some Fire OS menus close without acting, according to dumbtv)
+global window_animation_scale 0.5
+global transition_animation_scale 0.5
+
+[protetti] Packages Fire OS refuses to disable: they lose background running (appop RUN_IN_BACKGROUND)
+# The on-device DNS filter (`./gradlew dnsFilter`) blocks what they upload anyway.
+com.amazon.client.metrics
+com.amazon.device.metrics
+com.amazon.device.crashmanager
+com.amazon.device.logmanager
+com.amazon.ftvads.deeplinking
+com.amazon.device.software.ota
+com.amazon.device.software.ota.override
+com.amazon.device.rdmapplication
+com.amazon.tv.csapp

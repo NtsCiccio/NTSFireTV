@@ -18,6 +18,7 @@ import it.ntsciccio.ntsfiretv.home.OverlayActivity
 import it.ntsciccio.ntsfiretv.apps.AppPreferences
 import it.ntsciccio.ntsfiretv.home.Weather
 import it.ntsciccio.ntsfiretv.home.DockOrderActivity
+import it.ntsciccio.ntsfiretv.home.HomePreferences
 import it.ntsciccio.ntsfiretv.home.Row
 import it.ntsciccio.ntsfiretv.home.RowAdapter
 import it.ntsciccio.ntsfiretv.home.ThemeEditorActivity
@@ -128,6 +129,21 @@ class SettingsActivity : OverlayActivity() {
                 },
             ),
             Row(
+                title = getString(R.string.settings_memory_meter),
+                subtitle = getString(if (HomePreferences.memoryMeter(this)) R.string.settings_shown else R.string.settings_hidden),
+                action = {
+                    HomePreferences.setMemoryMeter(this, !HomePreferences.memoryMeter(this))
+                    adapter.setRows(buildRows())
+                },
+            ),
+            Row(
+                title = getString(R.string.settings_child_lock),
+                subtitle = getString(
+                    if (HomePreferences.childLock(this)) R.string.settings_child_lock_on else R.string.settings_child_lock_off,
+                ),
+                action = { toggleChildLock() },
+            ),
+            Row(
                 title = getString(R.string.settings_hidden_apps),
                 subtitle = hiddenAppsText(),
                 action = { showHiddenApps() },
@@ -158,6 +174,11 @@ class SettingsActivity : OverlayActivity() {
                                 "adb shell settings put secure screensaver_enabled 1",
                     )
                 },
+            ),
+            Row(
+                title = getString(R.string.settings_dns_filter),
+                subtitle = statusText(DeviceStatus.dnsFilterActive(this), R.string.status_dns_hint),
+                action = { showDnsFilterHelp() },
             ),
             Row(
                 title = getString(R.string.settings_status),
@@ -215,6 +236,38 @@ class SettingsActivity : OverlayActivity() {
                 }
             }
             .show()
+    }
+
+    /** Child lock: turning it on asks for confirmation and explains how to unlock; off at once. */
+    private fun toggleChildLock() {
+        if (HomePreferences.childLock(this)) {
+            HomePreferences.setChildLock(this, false)
+            toast(R.string.child_lock_disabled)
+            adapter.setRows(buildRows())
+            return
+        }
+        tvDialog()
+            .setTitle(R.string.settings_child_lock)
+            .setMessage(R.string.child_lock_message)
+            .setPositiveButton(R.string.child_lock_enable) { _, _ ->
+                HomePreferences.setChildLock(this, true)
+                toast(R.string.child_lock_enabled)
+                // Back to the home: Settings is no longer reachable from there
+                finish()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    /** The DNS filter is installed from the computer: shows the Gradle command with this stick's IP. */
+    private fun showDnsFilterHelp() {
+        runInBackground({ DeviceStatus.read(applicationContext).ip }) { ip ->
+            tvDialog()
+                .setTitle(R.string.settings_dns_filter)
+                .setMessage(getString(R.string.settings_dns_filter_message, ip ?: "IP"))
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+        }
     }
 
     /** IP, network, memory and storage: read on demand, in the background. */

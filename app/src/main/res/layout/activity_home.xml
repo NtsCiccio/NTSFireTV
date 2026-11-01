@@ -73,6 +73,35 @@
                 android:textSize="@dimen/clock_date_text_size"
                 android:visibility="gone" />
 
+        <!-- Free memory with a bar of what is in use: only if turned on in Settings -->
+        <LinearLayout
+                android:id="@+id/memory_meter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="end"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+            <TextView
+                    android:id="@+id/memory_meter_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:shadowColor="#E6000000"
+                    android:shadowDy="1"
+                    android:shadowRadius="6"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+
+            <ProgressBar
+                    android:id="@+id/memory_meter_bar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="@dimen/memory_meter_width"
+                    android:layout_height="4dp"
+                    android:layout_marginTop="4dp"
+                    android:max="100" />
+        </LinearLayout>
+
         <!-- Shortcuts to the Fire OS settings pages open to apps (HomeActivity fires the intents) -->
         <LinearLayout
                 android:id="@+id/shortcuts"

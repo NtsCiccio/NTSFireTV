@@ -9,6 +9,7 @@ import it.ntsciccio.ntsfiretv.apps.AppCatalog
 import it.ntsciccio.ntsfiretv.apps.AppPreferences
 import it.ntsciccio.ntsfiretv.apps.CustomBanners
 import it.ntsciccio.ntsfiretv.home.DockPreferences
+import it.ntsciccio.ntsfiretv.home.HomePreferences
 import it.ntsciccio.ntsfiretv.home.ThemeStore
 import it.ntsciccio.ntsfiretv.media.StorageVolumes
 import it.ntsciccio.ntsfiretv.wallpaper.WallpaperRepository
@@ -20,7 +21,7 @@ import java.io.IOException
 
 /**
  * Settings backup to a `NTSFireTV/backup/` folder: theme and user themes, dock,
- * hidden apps, wallpaper (including the images), custom banners.
+ * hidden apps, wallpaper (including the images), custom banners, home options (memory meter, child lock).
  * The weather city is left out: the backup lives in shared storage and on USB, readable by other apps.
  *
  * It is saved to the stick's storage and, if present, also to every USB drive; restore
@@ -37,6 +38,7 @@ object SettingsBackup {
     /** SharedPreferences that are saved (video positions are left out). */
     private val PREFERENCES = listOf(
         ThemeStore.PREFS_NAME, DockPreferences.PREFS_NAME, AppPreferences.PREFS_NAME, WallpaperRepository.PREFS_NAME,
+        HomePreferences.PREFS_NAME,
     )
 
     /** Internal files copied: chosen wallpapers and banners. */

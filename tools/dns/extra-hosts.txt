@@ -1,0 +1,50 @@
+# Extra hosts for the on-device DNS filter (`./gradlew dnsFilter`), added to the downloaded
+# HaGeZi lists. Plain domains, one per line: the filter also blocks every subdomain.
+#
+# From the dumbtv project (github.com/humblemuzzu/dumbtv, data/blocklists/extra-hosts.txt),
+# MIT License, Copyright (c) the dumbtv contributors. Hand-written from Fire OS APK strings.
+#
+# Deliberately NOT here, because the stick needs them:
+#   m.media-amazon.com / ecx.images-amazon.com              app artwork
+#   appstore-tv-prod-na.amazon.com / mas-ext                app store
+#   aiv-delivery.net / aiv-cdn.net / device-messaging-na   Prime Video (also removed from the downloaded lists)
+#   Alexa voice servers                                     voice search with the remote
+
+# OTA: nothing can check for or download a Fire OS update
+softwareupdates.amazon.com
+dubri19p4y5b.cloudfront.net
+distro-download.amazon.com
+amzdigital-a.akamaihd.net
+amzdigitaldownloads.edgesuite.net
+
+# Device telemetry and registration
+arcus-uswest.amazon.com
+arcus.amazon.com
+device-metrics-us.amazon.com
+device-metrics-us-2.amazon.com
+device-metrics-us-ud.amazon.com
+det-ta-g7g.amazon.com
+det-ta-g7g.integ.amazon.com
+unagi-zaz.amazon.com
+unagi-na.amazon.com
+metrics.media-amazon.com
+
+# Analytics pipeline
+aan.amazon.com
+fls-na.amazon.com
+todo-ta-g7g.amazon.com
+pindorama.amazon.com
+latinum.amazon.com
+dcape-na.amazon.com
+ceviche.amazon.com
+minerva.amazon.com
+
+# Amazon advertising: promo rows, sponsored tiles, ad attribution
+aax.amazon-adsystem.com
+aax-us.amazon-adsystem.com
+aax-us-east.amazon-adsystem.com
+aax-us-west.amazon-adsystem.com
+aax-eu.amazon-adsystem.com
+aax-fe.amazon-adsystem.com
+amazon-adsystem.com
+mads.amazon.com

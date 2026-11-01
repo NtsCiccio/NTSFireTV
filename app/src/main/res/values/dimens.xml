@@ -45,4 +45,7 @@
 
     <!-- Theme editor: preview column -->
     <dimen name="theme_preview_width">300dp</dimen>
+
+    <!-- Home: memory meter bar under the clock -->
+    <dimen name="memory_meter_width">180dp</dimen>
 </resources>

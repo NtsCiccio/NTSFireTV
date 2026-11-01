@@ -163,6 +163,27 @@
     <string name="status_restart_needed">permesso concesso, riapri NTSFireTV</string>
     <string name="status_press_to_allow">premi OK per consentire</string>
 
+    <!-- Memory meter in the home -->
+    <string name="settings_memory_meter">Memoria nella home</string>
+    <string name="settings_shown">Mostrata sotto l\'orologio</string>
+    <string name="settings_hidden">Nascosta</string>
+    <string name="memory_meter">%1$s liberi su %2$s</string>
+    <string name="memory_meter_low">%1$s liberi su %2$s · memoria quasi esaurita</string>
+
+    <!-- Child lock -->
+    <string name="settings_child_lock">Blocco bambini</string>
+    <string name="settings_child_lock_on">Attivo · per sbloccare tieni premuto ☰ per 3 secondi nella home</string>
+    <string name="settings_child_lock_off">Disattivato</string>
+    <string name="child_lock_message">Nasconde Impostazioni, scorciatoie di Fire OS e menu delle app: dalla home si possono solo aprire le app.\n\nPer sbloccare: nella home tieni premuto il tasto ☰ (Menu) per 3 secondi, poi Impostazioni → Blocco bambini.\n\nNon è un PIN: il tasto Home tenuto premuto apre ancora il menu rapido di Fire OS.</string>
+    <string name="child_lock_enable">Attiva</string>
+    <string name="child_lock_enabled">Blocco bambini attivo</string>
+    <string name="child_lock_disabled">Blocco bambini disattivato</string>
+
+    <!-- On-device DNS filter (personalDNSfilter, installed with ./gradlew dnsFilter) -->
+    <string name="settings_dns_filter">Filtro DNS</string>
+    <string name="status_dns_hint">premi OK per il comando</string>
+    <string name="settings_dns_filter_message">Blocca telemetria, aggiornamenti e pubblicità di Amazon (e i domini pubblicitari più comuni) per tutte le app.\n\nPer attivarlo o aggiornare la lista, dal computer, nella cartella di NTSFireTV:\n\n./gradlew dnsFilter -Pstick=%1$s:5555\n\nPer toglierlo: ./gradlew restoreDnsFilter</string>
+
     <!-- Dock order (M9) -->
     <string name="dock_order_hint">OK su una tile per prenderla, ◀ ▶ per spostarla, di nuovo OK per lasciarla.</string>
     <string name="dock_order_moving">◀ %1$s ▶</string>
